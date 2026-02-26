@@ -64,5 +64,8 @@ func run(source string) error {
 		return nil
 	}
 
+	scanner := NewScanner(source)
+	scanner.scanTokens()
+
 	return nil
 }

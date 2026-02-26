@@ -3,15 +3,15 @@ package main
 import "testing"
 
 func TestRunExistingFileWithoutErrors(t *testing.T) {
-	ans := runFile("main.lox")
-	if ans != nil {
-		t.Errorf("runFile() = %s, want nil", ans)
+	err := runFile("main.lox")
+	if err != nil {
+		t.Errorf("runFile() want nil but got: %s", err)
 	}
 }
 
 func TestRunEmptyWithoutErrors(t *testing.T) {
-	ans := run("")
-	if ans != nil {
-		t.Errorf("run() = %s, want nil", ans)
+	err := run("")
+	if err != nil {
+		t.Errorf("run() want nil but got: %s", err)
 	}
 }
