@@ -8,3 +8,6 @@ run:
 
 repl:
 	@./${BINAY_NAME}
+
+test:
+	go test -v

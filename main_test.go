@@ -2,21 +2,14 @@ package main
 
 import "testing"
 
-func TestRunFileIsImplemented(t *testing.T) {
-	ans := runFile("something")
+func TestRunExistingFileWithoutErrors(t *testing.T) {
+	ans := runFile("main.lox")
 	if ans != nil {
 		t.Errorf("runFile() = %s, want nil", ans)
 	}
 }
 
-func TestRunInteractiveIsImplemented(t *testing.T) {
-	ans := runInteractive()
-	if ans != nil {
-		t.Errorf("runInteractive() = %s, want nil", ans)
-	}
-}
-
-func TestRunIsImplemented(t *testing.T) {
+func TestRunEmptyWithoutErrors(t *testing.T) {
 	ans := run("")
 	if ans != nil {
 		t.Errorf("run() = %s, want nil", ans)

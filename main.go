@@ -1,7 +1,7 @@
 package main
 
 import (
-	"errors"
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -22,14 +22,47 @@ func main() {
 	}
 }
 
-func runFile(filename string) error {
-	return errors.New("Not implemented")
+func runFile(fileName string) error {
+	fileData, err := os.ReadFile(fileName)
+	if err != nil {
+		return err
+	}
+
+	source := string(fileData)
+	run(source)
+
+	return nil
 }
 
 func runInteractive() error {
-	return errors.New("Not implemented")
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Printf("> ")
+		line, prefix, err := reader.ReadLine()
+
+		if err != nil {
+			return err
+		}
+
+		if prefix {
+			fmt.Println("Prompt size was too large!")
+		}
+
+		source := string(line)
+		if len(source) == 0 {
+			break
+		}
+
+		run(source + "\n")
+	}
+
+	return nil
 }
 
 func run(source string) error {
-	return errors.New("Not implemented")
+	if len(source) == 0 {
+		return nil
+	}
+
+	return nil
 }
