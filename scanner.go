@@ -75,6 +75,14 @@ func (s *Scanner) scanToken() {
         } else {
             s.addSimpleToken(GREATER)
         }
+    case '/':
+        if s.match('/') {
+            for s.peek() != '\n' && !s.isAtEnd() {
+                s.advance()
+            }
+        } else {
+            s.addSimpleToken(SLASH)
+        }
     case ' ', '\t', '\r':
     case '\n':
         s.line++
@@ -95,6 +103,14 @@ func (s *Scanner) match(expected byte) bool {
     s.current++
 
     return true
+}
+
+func (s *Scanner) peek() byte {
+    if s.isAtEnd() {
+        return '\x00'
+    }
+
+    return s.source[s.current]
 }
 
 func (s *Scanner) isAtEnd() bool {

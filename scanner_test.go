@@ -133,6 +133,26 @@ func TestOperatorTokens(t *testing.T) {
     }
 }
 
+func TestComment(t *testing.T) {
+	scanner := NewScanner("// This is a comment\n/\n")
+    scanner.scanTokens()
+	actual := scanner.tokens
+	expected := []Token{
+        {SLASH, "/", nil, 2},
+        {EOF, "", nil, 3},
+    }
+	if len(actual) != len(expected) {
+		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
+	}
+    for i := range expected {
+        e := expected[i]
+        a := actual[i]
+        if a != e {
+            t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+        }
+    }
+}
+
 func TestUnexpectedCharacter(t *testing.T) {
 	scanner := NewScanner("?")
 
