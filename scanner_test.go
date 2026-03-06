@@ -78,7 +78,7 @@ func TestAddToken(t *testing.T) {
 }
 
 func TestScanMultipleTokens(t *testing.T) {
-	scanner := NewScanner("(){},.;-+*")
+	scanner := NewScanner("(){},.;-+*\n")
     scanner.scanTokens()
 	actual := scanner.tokens
 	expected := []Token{
@@ -92,7 +92,7 @@ func TestScanMultipleTokens(t *testing.T) {
         {MINUS, "-", nil, 1},
         {PLUS, "+", nil, 1},
         {STAR, "*", nil, 1},
-        {EOF, "", nil, 1},
+        {EOF, "", nil, 2},
     }
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))

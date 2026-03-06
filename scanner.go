@@ -22,7 +22,7 @@ func (s *Scanner) scanTokens() ([]Token, error) {
 		s.start = s.current
 		s.scanToken()
 	}
-    s.tokens = append(s.tokens, *NewToken(EOF, "", nil, 1))
+    s.tokens = append(s.tokens, *NewToken(EOF, "", nil, s.line))
 
 	return s.tokens, nil
 }
