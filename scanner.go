@@ -20,7 +20,8 @@ func (s *Scanner) scanTokens() ([]Token, error) {
 		s.start = s.current
 		s.scanToken()
 	}
-	s.addSimpleToken(EOF)
+    s.tokens = append(s.tokens, *NewToken(EOF, "", nil, 1))
+
 	return s.tokens, nil
 }
 
@@ -29,6 +30,25 @@ func (s *Scanner) scanToken() {
 
 	switch b {
 	case '(':
+        s.addSimpleToken(LEFT_PAREN)
+	case ')':
+        s.addSimpleToken(RIGHT_PAREN)
+	case '{':
+        s.addSimpleToken(LEFT_BRACE)
+	case '}':
+        s.addSimpleToken(RIGHT_BRACE)
+	case ',':
+        s.addSimpleToken(COMMA)
+	case '.':
+        s.addSimpleToken(DOT)
+	case ';':
+        s.addSimpleToken(SEMICOLON)
+	case '-':
+        s.addSimpleToken(MINUS)
+	case '+':
+        s.addSimpleToken(PLUS)
+	case '*':
+        s.addSimpleToken(STAR)
 	}
 }
 

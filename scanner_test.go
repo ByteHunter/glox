@@ -76,3 +76,32 @@ func TestAddToken(t *testing.T) {
 		t.Errorf("Expected '%v' but got '%v'", expected, actual)
 	}
 }
+
+func TestScanMultipleTokens(t *testing.T) {
+	scanner := NewScanner("(){},.;-+*")
+    scanner.scanTokens()
+	actual := scanner.tokens
+	expected := []Token{
+        {LEFT_PAREN, "(", nil, 1},
+        {RIGHT_PAREN, ")", nil, 1},
+        {LEFT_BRACE, "{", nil, 1},
+        {RIGHT_BRACE, "}", nil, 1},
+        {COMMA, ",", nil, 1},
+        {DOT, ".", nil, 1},
+        {SEMICOLON, ";", nil, 1},
+        {MINUS, "-", nil, 1},
+        {PLUS, "+", nil, 1},
+        {STAR, "*", nil, 1},
+        {EOF, "", nil, 1},
+    }
+	if len(actual) != len(expected) {
+		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
+	}
+    for i := range expected {
+        e := expected[i]
+        a := actual[i]
+        if a != e {
+            t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+        }
+    }
+}

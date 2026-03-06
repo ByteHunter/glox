@@ -89,9 +89,9 @@ var tokenTypeName = map[TokenType]string{
 	RIGHT_BRACE: "RIGHT_BRACE",
 	COMMA:       "COMMA",
 	DOT:         "DOT",
+	SEMICOLON:   "SEMICOLON",
 	MINUS:       "MINUS",
 	PLUS:        "PLUS",
-	SEMICOLON:   "SEMICOLON",
 	SLASH:       "SLASH",
 	STAR:        "STAR",
 
