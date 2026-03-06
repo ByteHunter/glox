@@ -105,3 +105,15 @@ func TestScanMultipleTokens(t *testing.T) {
         }
     }
 }
+
+func TestUnexpectedCharacter(t *testing.T) {
+	scanner := NewScanner("?")
+
+	actual := captureStdout(t, func() {
+        scanner.scanTokens()
+	})
+    expected := "[line 1] Error : Unexpected character ?.\n"
+	if actual != expected {
+        t.Errorf("Expected '%v' but got '%v'", expected, actual)
+	}
+}

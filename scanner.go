@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Scanner struct {
 	source               string
 	tokens               []Token
@@ -49,6 +51,11 @@ func (s *Scanner) scanToken() {
         s.addSimpleToken(PLUS)
 	case '*':
         s.addSimpleToken(STAR)
+    case ' ', '\t', '\r':
+    case '\n':
+        s.line++
+    default:
+        loxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
 	}
 }
 
