@@ -106,6 +106,33 @@ func TestScanMultipleTokens(t *testing.T) {
     }
 }
 
+func TestOperatorTokens(t *testing.T) {
+	scanner := NewScanner("! = < > != == <= >=\n")
+    scanner.scanTokens()
+	actual := scanner.tokens
+	expected := []Token{
+        {BANG, "!", nil, 1},
+        {EQUAL, "=", nil, 1},
+        {LESS, "<", nil, 1},
+        {GREATER, ">", nil, 1},
+        {BANQ_EQUAL, "!=", nil, 1},
+        {EQUAL_EQUAL, "==", nil, 1},
+        {LESS_EQUAL, "<=", nil, 1},
+        {GREATER_EQUAL, ">=", nil, 1},
+        {EOF, "", nil, 2},
+    }
+	if len(actual) != len(expected) {
+		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
+	}
+    for i := range expected {
+        e := expected[i]
+        a := actual[i]
+        if a != e {
+            t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+        }
+    }
+}
+
 func TestUnexpectedCharacter(t *testing.T) {
 	scanner := NewScanner("?")
 

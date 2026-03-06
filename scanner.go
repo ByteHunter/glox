@@ -51,12 +51,50 @@ func (s *Scanner) scanToken() {
         s.addSimpleToken(PLUS)
 	case '*':
         s.addSimpleToken(STAR)
+    case '!':
+        if s.match('=') {
+            s.addSimpleToken(BANQ_EQUAL)
+        } else {
+            s.addSimpleToken(BANG)
+        }
+    case '=':
+        if s.match('=') {
+            s.addSimpleToken(EQUAL_EQUAL)
+        } else {
+            s.addSimpleToken(EQUAL)
+        }
+    case '<':
+        if s.match('=') {
+            s.addSimpleToken(LESS_EQUAL)
+        } else {
+            s.addSimpleToken(LESS)
+        }
+    case '>':
+        if s.match('=') {
+            s.addSimpleToken(GREATER_EQUAL)
+        } else {
+            s.addSimpleToken(GREATER)
+        }
     case ' ', '\t', '\r':
     case '\n':
         s.line++
     default:
         loxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
 	}
+}
+
+func (s *Scanner) match(expected byte) bool {
+    if s.isAtEnd() {
+        return false
+    }
+
+    if s.source[s.current] != expected {
+        return false
+    }
+
+    s.current++
+
+    return true
 }
 
 func (s *Scanner) isAtEnd() bool {
