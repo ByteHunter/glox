@@ -134,12 +134,15 @@ func TestOperatorTokens(t *testing.T) {
 }
 
 func TestComment(t *testing.T) {
-	scanner := NewScanner("// This is a comment\n/\n")
+	content := "// This is a comment\n/\n" +
+				".// This is also a comment\n"
+	scanner := NewScanner(content)
     scanner.scanTokens()
 	actual := scanner.tokens
 	expected := []Token{
         {SLASH, "/", nil, 2},
-        {EOF, "", nil, 3},
+        {DOT, ".", nil, 3},
+        {EOF, "", nil, 4},
     }
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
