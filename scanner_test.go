@@ -77,7 +77,7 @@ func TestAddToken(t *testing.T) {
 	}
 }
 
-func TestScanMultipleTokens(t *testing.T) {
+func TestSimpleTokens(t *testing.T) {
 	scanner := NewScanner("(){},.;-+*\n")
     scanner.scanTokens()
 	actual := scanner.tokens
