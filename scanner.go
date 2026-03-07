@@ -22,7 +22,7 @@ func (s *Scanner) scanTokens() ([]Token, error) {
 		s.start = s.current
 		s.scanToken()
 	}
-    s.tokens = append(s.tokens, *NewToken(EOF, "", nil, s.line))
+	s.tokens = append(s.tokens, *NewToken(EOF, "", nil, s.line))
 
 	return s.tokens, nil
 }
@@ -32,85 +32,85 @@ func (s *Scanner) scanToken() {
 
 	switch b {
 	case '(':
-        s.addSimpleToken(LEFT_PAREN)
+		s.addSimpleToken(LEFT_PAREN)
 	case ')':
-        s.addSimpleToken(RIGHT_PAREN)
+		s.addSimpleToken(RIGHT_PAREN)
 	case '{':
-        s.addSimpleToken(LEFT_BRACE)
+		s.addSimpleToken(LEFT_BRACE)
 	case '}':
-        s.addSimpleToken(RIGHT_BRACE)
+		s.addSimpleToken(RIGHT_BRACE)
 	case ',':
-        s.addSimpleToken(COMMA)
+		s.addSimpleToken(COMMA)
 	case '.':
-        s.addSimpleToken(DOT)
+		s.addSimpleToken(DOT)
 	case ';':
-        s.addSimpleToken(SEMICOLON)
+		s.addSimpleToken(SEMICOLON)
 	case '-':
-        s.addSimpleToken(MINUS)
+		s.addSimpleToken(MINUS)
 	case '+':
-        s.addSimpleToken(PLUS)
+		s.addSimpleToken(PLUS)
 	case '*':
-        s.addSimpleToken(STAR)
-    case '!':
-        if s.match('=') {
-            s.addSimpleToken(BANQ_EQUAL)
-        } else {
-            s.addSimpleToken(BANG)
-        }
-    case '=':
-        if s.match('=') {
-            s.addSimpleToken(EQUAL_EQUAL)
-        } else {
-            s.addSimpleToken(EQUAL)
-        }
-    case '<':
-        if s.match('=') {
-            s.addSimpleToken(LESS_EQUAL)
-        } else {
-            s.addSimpleToken(LESS)
-        }
-    case '>':
-        if s.match('=') {
-            s.addSimpleToken(GREATER_EQUAL)
-        } else {
-            s.addSimpleToken(GREATER)
-        }
-    case '/':
-        if s.match('/') {
-            for s.peek() != '\n' && !s.isAtEnd() {
-                s.advance()
-            }
-        } else {
-            s.addSimpleToken(SLASH)
-        }
-    case ' ', '\t', '\r':
-    case '\n':
-        s.line++
-    default:
-        loxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
+		s.addSimpleToken(STAR)
+	case '!':
+		if s.match('=') {
+			s.addSimpleToken(BANQ_EQUAL)
+		} else {
+			s.addSimpleToken(BANG)
+		}
+	case '=':
+		if s.match('=') {
+			s.addSimpleToken(EQUAL_EQUAL)
+		} else {
+			s.addSimpleToken(EQUAL)
+		}
+	case '<':
+		if s.match('=') {
+			s.addSimpleToken(LESS_EQUAL)
+		} else {
+			s.addSimpleToken(LESS)
+		}
+	case '>':
+		if s.match('=') {
+			s.addSimpleToken(GREATER_EQUAL)
+		} else {
+			s.addSimpleToken(GREATER)
+		}
+	case '/':
+		if s.match('/') {
+			for s.peek() != '\n' && !s.isAtEnd() {
+				s.advance()
+			}
+		} else {
+			s.addSimpleToken(SLASH)
+		}
+	case ' ', '\t', '\r':
+	case '\n':
+		s.line++
+	default:
+		loxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
 	}
 }
 
 func (s *Scanner) match(expected byte) bool {
-    if s.isAtEnd() {
-        return false
-    }
+	if s.isAtEnd() {
+		return false
+	}
 
-    if s.source[s.current] != expected {
-        return false
-    }
+	if s.source[s.current] != expected {
+		return false
+	}
 
-    s.current++
+	s.current++
 
-    return true
+	return true
 }
 
 func (s *Scanner) peek() byte {
-    if s.isAtEnd() {
-        return '\x00'
-    }
+	if s.isAtEnd() {
+		return '\x00'
+	}
 
-    return s.source[s.current]
+	return s.source[s.current]
 }
 
 func (s *Scanner) isAtEnd() bool {

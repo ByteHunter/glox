@@ -79,91 +79,91 @@ func TestAddToken(t *testing.T) {
 
 func TestSimpleTokens(t *testing.T) {
 	scanner := NewScanner("(){},.;-+*\n")
-    scanner.scanTokens()
+	scanner.scanTokens()
 	actual := scanner.tokens
 	expected := []Token{
-        {LEFT_PAREN, "(", nil, 1},
-        {RIGHT_PAREN, ")", nil, 1},
-        {LEFT_BRACE, "{", nil, 1},
-        {RIGHT_BRACE, "}", nil, 1},
-        {COMMA, ",", nil, 1},
-        {DOT, ".", nil, 1},
-        {SEMICOLON, ";", nil, 1},
-        {MINUS, "-", nil, 1},
-        {PLUS, "+", nil, 1},
-        {STAR, "*", nil, 1},
-        {EOF, "", nil, 2},
-    }
+		{LEFT_PAREN, "(", nil, 1},
+		{RIGHT_PAREN, ")", nil, 1},
+		{LEFT_BRACE, "{", nil, 1},
+		{RIGHT_BRACE, "}", nil, 1},
+		{COMMA, ",", nil, 1},
+		{DOT, ".", nil, 1},
+		{SEMICOLON, ";", nil, 1},
+		{MINUS, "-", nil, 1},
+		{PLUS, "+", nil, 1},
+		{STAR, "*", nil, 1},
+		{EOF, "", nil, 2},
+	}
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
 	}
-    for i := range expected {
-        e := expected[i]
-        a := actual[i]
-        if a != e {
-            t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
-        }
-    }
+	for i := range expected {
+		e := expected[i]
+		a := actual[i]
+		if a != e {
+			t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+		}
+	}
 }
 
 func TestOperatorTokens(t *testing.T) {
 	scanner := NewScanner("! = < > != == <= >=\n")
-    scanner.scanTokens()
+	scanner.scanTokens()
 	actual := scanner.tokens
 	expected := []Token{
-        {BANG, "!", nil, 1},
-        {EQUAL, "=", nil, 1},
-        {LESS, "<", nil, 1},
-        {GREATER, ">", nil, 1},
-        {BANQ_EQUAL, "!=", nil, 1},
-        {EQUAL_EQUAL, "==", nil, 1},
-        {LESS_EQUAL, "<=", nil, 1},
-        {GREATER_EQUAL, ">=", nil, 1},
-        {EOF, "", nil, 2},
-    }
+		{BANG, "!", nil, 1},
+		{EQUAL, "=", nil, 1},
+		{LESS, "<", nil, 1},
+		{GREATER, ">", nil, 1},
+		{BANQ_EQUAL, "!=", nil, 1},
+		{EQUAL_EQUAL, "==", nil, 1},
+		{LESS_EQUAL, "<=", nil, 1},
+		{GREATER_EQUAL, ">=", nil, 1},
+		{EOF, "", nil, 2},
+	}
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
 	}
-    for i := range expected {
-        e := expected[i]
-        a := actual[i]
-        if a != e {
-            t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
-        }
-    }
+	for i := range expected {
+		e := expected[i]
+		a := actual[i]
+		if a != e {
+			t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+		}
+	}
 }
 
 func TestComment(t *testing.T) {
 	content := "// This is a comment\n/\n" +
-				".// This is also a comment\n"
+		".// This is also a comment\n"
 	scanner := NewScanner(content)
-    scanner.scanTokens()
+	scanner.scanTokens()
 	actual := scanner.tokens
 	expected := []Token{
-        {SLASH, "/", nil, 2},
-        {DOT, ".", nil, 3},
-        {EOF, "", nil, 4},
-    }
+		{SLASH, "/", nil, 2},
+		{DOT, ".", nil, 3},
+		{EOF, "", nil, 4},
+	}
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
 	}
-    for i := range expected {
-        e := expected[i]
-        a := actual[i]
-        if a != e {
-            t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
-        }
-    }
+	for i := range expected {
+		e := expected[i]
+		a := actual[i]
+		if a != e {
+			t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+		}
+	}
 }
 
 func TestUnexpectedCharacter(t *testing.T) {
 	scanner := NewScanner("?")
 
 	actual := captureStdout(t, func() {
-        scanner.scanTokens()
+		scanner.scanTokens()
 	})
-    expected := "[line 1] Error : Unexpected character ?.\n"
+	expected := "[line 1] Error : Unexpected character ?.\n"
 	if actual != expected {
-        t.Errorf("Expected '%v' but got '%v'", expected, actual)
+		t.Errorf("Expected '%v' but got '%v'", expected, actual)
 	}
 }
