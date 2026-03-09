@@ -177,6 +177,27 @@ func TestString(t *testing.T) {
 	}
 }
 
+func TestAllowMultilineStrings(t *testing.T) {
+	content := "\"Example of a multiline string\nAnother line\"\n"
+	scanner := NewScanner(content)
+	scanner.scanTokens()
+	actual := scanner.tokens
+	expected := []Token{
+		{STRING, "\"Example of a multiline string\nAnother line\"", "Example of a multiline string\nAnother line", 2},
+		{EOF, "", nil, 3},
+	}
+	if len(actual) != len(expected) {
+		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
+	}
+	for i := range expected {
+		e := expected[i]
+		a := actual[i]
+		if a != e {
+			t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+		}
+	}
+}
+
 func TestUnterminatedString(t *testing.T) {
 	content := "\"Example string\n"
 	scanner := NewScanner(content)
