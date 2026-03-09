@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Scanner struct {
 	source               string
@@ -89,6 +92,10 @@ func (s *Scanner) scanToken() {
 	case '\n':
 		s.line++
 	default:
+		if s.isDigit(b) {
+			s.number()
+			break
+		}
 		loxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
 	}
 }
@@ -112,6 +119,32 @@ func (s *Scanner) string() {
 	s.addToken(STRING, value)
 }
 
+func (s *Scanner) number() {
+	for s.isDigit(s.peek()) {
+		s.advance()
+	}
+
+	if s.peek() == '.' && s.isDigit(s.peekNext()) {
+		s.advance()
+
+		for s.isDigit(s.peek()) {
+			s.advance()
+		}
+	}
+
+	value := s.source[s.start:s.current]
+	float_value, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		loxError(s.line, "Could not parse the literal as float")
+	}
+
+	s.addToken(NUMBER, float_value)
+}
+
+func (s *Scanner) isDigit(b byte) bool {
+	return b >= '0' && b <= '9'
+}
+
 func (s *Scanner) match(expected byte) bool {
 	if s.isAtEnd() {
 		return false
@@ -132,6 +165,14 @@ func (s *Scanner) peek() byte {
 	}
 
 	return s.source[s.current]
+}
+
+func (s *Scanner) peekNext() byte {
+	if s.current+1 >= len(s.source) {
+		return '\x00'
+	}
+
+	return s.source[s.current+1]
 }
 
 func (s *Scanner) isAtEnd() bool {

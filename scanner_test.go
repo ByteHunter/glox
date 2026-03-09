@@ -211,6 +211,59 @@ func TestUnterminatedString(t *testing.T) {
 	}
 }
 
+func TestNumber(t *testing.T) {
+	var tests = []struct {
+		name     string
+		content  string
+		expected []Token
+	}{
+		{
+			"Valid number",
+			"123\n",
+			[]Token{
+				{NUMBER, "123", float64(123), 1},
+				{EOF, "", nil, 2},
+			},
+		},
+		{
+			"Valid number",
+			"00001\n",
+			[]Token{
+				{NUMBER, "00001", float64(1), 1},
+				{EOF, "", nil, 2},
+			},
+		},
+		{
+			"Invalid number",
+			"123.\n",
+			[]Token{
+				{NUMBER, "123", float64(123), 1},
+				{DOT, ".", nil, 1},
+				{EOF, "", nil, 2},
+			},
+		},
+	}
+
+	for set, test := range tests {
+
+		scanner := NewScanner(test.content)
+		scanner.scanTokens()
+		actual := scanner.tokens
+		if len(actual) != len(test.expected) {
+			t.Errorf("Data Set #%d Expected '%v' but got '%v'", set, len(test.expected), len(actual))
+			// t.Errorf("%v\n", actual)
+		}
+		for i := range test.expected {
+			e := test.expected[i]
+			a := actual[i]
+			if a != e {
+				t.Errorf("Data Set #%d Expected '%v' but got '%v' at index %d", set, e, a, i)
+			}
+		}
+	}
+
+}
+
 func TestUnexpectedCharacter(t *testing.T) {
 	scanner := NewScanner("?")
 
