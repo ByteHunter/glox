@@ -156,6 +156,40 @@ func TestComment(t *testing.T) {
 	}
 }
 
+func TestString(t *testing.T) {
+	content := "\"Example string\"\n"
+	scanner := NewScanner(content)
+	scanner.scanTokens()
+	actual := scanner.tokens
+	expected := []Token{
+		{STRING, "\"Example string\"", "Example string", 1},
+		{EOF, "", nil, 2},
+	}
+	if len(actual) != len(expected) {
+		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
+	}
+	for i := range expected {
+		e := expected[i]
+		a := actual[i]
+		if a != e {
+			t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+		}
+	}
+}
+
+func TestUnterminatedString(t *testing.T) {
+	content := "\"Example string\n"
+	scanner := NewScanner(content)
+	actual := captureStdout(t, func() {
+		scanner.scanTokens()
+	})
+
+	expected := "[line 2] Error : Unterminated string.\n"
+	if actual != expected {
+		t.Errorf("Expected '%v' but got '%v'", expected, actual)
+	}
+}
+
 func TestUnexpectedCharacter(t *testing.T) {
 	scanner := NewScanner("?")
 

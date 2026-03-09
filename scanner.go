@@ -83,12 +83,33 @@ func (s *Scanner) scanToken() {
 		} else {
 			s.addSimpleToken(SLASH)
 		}
+	case '"':
+		s.string()
 	case ' ', '\t', '\r':
 	case '\n':
 		s.line++
 	default:
 		loxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
 	}
+}
+
+func (s *Scanner) string() {
+	for s.peek() != '"' && !s.isAtEnd() {
+		if s.peek() == '\n' {
+			s.line++
+		}
+		s.advance()
+	}
+
+	if s.isAtEnd() {
+		loxError(s.line, "Unterminated string.")
+		return
+	}
+
+	s.advance()
+
+	value := s.source[s.start+1: s.current-1]
+	s.addToken(STRING, value)
 }
 
 func (s *Scanner) match(expected byte) bool {
