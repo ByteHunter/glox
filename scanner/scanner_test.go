@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/ByteHunter/glox/token"
@@ -250,23 +251,23 @@ func TestNumber(t *testing.T) {
 	}
 
 	for set, test := range tests {
-
-		scanner := NewScanner(test.content)
-		scanner.ScanTokens()
-		actual := scanner.tokens
-		if len(actual) != len(test.expected) {
-			t.Errorf("Data Set #%d Expected '%v' but got '%v'", set, len(test.expected), len(actual))
-			// t.Errorf("%v\n", actual)
-		}
-		for i := range test.expected {
-			e := test.expected[i]
-			a := actual[i]
-			if a != e {
-				t.Errorf("Data Set #%d Expected '%v' but got '%v' at index %d", set, e, a, i)
+		testName := fmt.Sprintf("#%d", set)
+		t.Run(testName, func(t *testing.T) {
+			scanner := NewScanner(test.content)
+			scanner.ScanTokens()
+			actual := scanner.tokens
+			if len(actual) != len(test.expected) {
+				t.Errorf("Expected '%v' but got '%v'", len(test.expected), len(actual))
 			}
-		}
+			for i := range test.expected {
+				e := test.expected[i]
+				a := actual[i]
+				if a != e {
+					t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+				}
+			}
+		})
 	}
-
 }
 
 func TestUnexpectedCharacter(t *testing.T) {
