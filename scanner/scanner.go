@@ -1,13 +1,16 @@
-package main
+package scanner
 
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/ByteHunter/glox/reporting"
+	"github.com/ByteHunter/glox/token"
 )
 
 type Scanner struct {
 	source               string
-	tokens               []Token
+	tokens               []token.Token
 	start, current, line int
 }
 
@@ -20,12 +23,12 @@ func NewScanner(source string) *Scanner {
 	}
 }
 
-func (s *Scanner) scanTokens() ([]Token, error) {
+func (s *Scanner) ScanTokens() ([]token.Token, error) {
 	for !s.isAtEnd() {
 		s.start = s.current
 		s.scanToken()
 	}
-	s.tokens = append(s.tokens, *NewToken(EOF, "", nil, s.line))
+	s.tokens = append(s.tokens, *token.NewToken(token.EOF, "", nil, s.line))
 
 	return s.tokens, nil
 }
@@ -35,48 +38,48 @@ func (s *Scanner) scanToken() {
 
 	switch b {
 	case '(':
-		s.addSimpleToken(LEFT_PAREN)
+		s.addSimpleToken(token.LEFT_PAREN)
 	case ')':
-		s.addSimpleToken(RIGHT_PAREN)
+		s.addSimpleToken(token.RIGHT_PAREN)
 	case '{':
-		s.addSimpleToken(LEFT_BRACE)
+		s.addSimpleToken(token.LEFT_BRACE)
 	case '}':
-		s.addSimpleToken(RIGHT_BRACE)
+		s.addSimpleToken(token.RIGHT_BRACE)
 	case ',':
-		s.addSimpleToken(COMMA)
+		s.addSimpleToken(token.COMMA)
 	case '.':
-		s.addSimpleToken(DOT)
+		s.addSimpleToken(token.DOT)
 	case ';':
-		s.addSimpleToken(SEMICOLON)
+		s.addSimpleToken(token.SEMICOLON)
 	case '-':
-		s.addSimpleToken(MINUS)
+		s.addSimpleToken(token.MINUS)
 	case '+':
-		s.addSimpleToken(PLUS)
+		s.addSimpleToken(token.PLUS)
 	case '*':
-		s.addSimpleToken(STAR)
+		s.addSimpleToken(token.STAR)
 	case '!':
 		if s.match('=') {
-			s.addSimpleToken(BANQ_EQUAL)
+			s.addSimpleToken(token.BANQ_EQUAL)
 		} else {
-			s.addSimpleToken(BANG)
+			s.addSimpleToken(token.BANG)
 		}
 	case '=':
 		if s.match('=') {
-			s.addSimpleToken(EQUAL_EQUAL)
+			s.addSimpleToken(token.EQUAL_EQUAL)
 		} else {
-			s.addSimpleToken(EQUAL)
+			s.addSimpleToken(token.EQUAL)
 		}
 	case '<':
 		if s.match('=') {
-			s.addSimpleToken(LESS_EQUAL)
+			s.addSimpleToken(token.LESS_EQUAL)
 		} else {
-			s.addSimpleToken(LESS)
+			s.addSimpleToken(token.LESS)
 		}
 	case '>':
 		if s.match('=') {
-			s.addSimpleToken(GREATER_EQUAL)
+			s.addSimpleToken(token.GREATER_EQUAL)
 		} else {
-			s.addSimpleToken(GREATER)
+			s.addSimpleToken(token.GREATER)
 		}
 	case '/':
 		if s.match('/') {
@@ -84,7 +87,7 @@ func (s *Scanner) scanToken() {
 				s.advance()
 			}
 		} else {
-			s.addSimpleToken(SLASH)
+			s.addSimpleToken(token.SLASH)
 		}
 	case '"':
 		s.string()
@@ -96,7 +99,7 @@ func (s *Scanner) scanToken() {
 			s.number()
 			break
 		}
-		loxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
+		reporting.LoxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
 	}
 }
 
@@ -109,14 +112,14 @@ func (s *Scanner) string() {
 	}
 
 	if s.isAtEnd() {
-		loxError(s.line, "Unterminated string.")
+		reporting.LoxError(s.line, "Unterminated string.")
 		return
 	}
 
 	s.advance()
 
-	value := s.source[s.start+1: s.current-1]
-	s.addToken(STRING, value)
+	value := s.source[s.start+1 : s.current-1]
+	s.addToken(token.STRING, value)
 }
 
 func (s *Scanner) number() {
@@ -135,10 +138,10 @@ func (s *Scanner) number() {
 	value := s.source[s.start:s.current]
 	float_value, err := strconv.ParseFloat(value, 64)
 	if err != nil {
-		loxError(s.line, "Could not parse the literal as float")
+		reporting.LoxError(s.line, "Could not parse the literal as float")
 	}
 
-	s.addToken(NUMBER, float_value)
+	s.addToken(token.NUMBER, float_value)
 }
 
 func (s *Scanner) isDigit(b byte) bool {
@@ -186,12 +189,12 @@ func (s *Scanner) advance() byte {
 	return b
 }
 
-func (s *Scanner) addSimpleToken(tokenType TokenType) {
+func (s *Scanner) addSimpleToken(tokenType token.TokenType) {
 	s.addToken(tokenType, nil)
 }
 
-func (s *Scanner) addToken(tokenType TokenType, value any) {
+func (s *Scanner) addToken(tokenType token.TokenType, value any) {
 	lexeme := s.source[s.start:s.current]
-	newToken := NewToken(tokenType, lexeme, value, s.line)
+	newToken := token.NewToken(tokenType, lexeme, value, s.line)
 	s.tokens = append(s.tokens, *newToken)
 }

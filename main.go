@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	scan "github.com/ByteHunter/glox/scanner"
 )
 
 func main() {
@@ -64,16 +66,8 @@ func run(source string) error {
 		return nil
 	}
 
-	scanner := NewScanner(source)
-	scanner.scanTokens()
+	scanner := scan.NewScanner(source)
+	scanner.ScanTokens()
 
 	return nil
-}
-
-func loxError(line int, message string) {
-	loxReport(line, "", message)
-}
-
-func loxReport(line int, where string, message string) {
-	fmt.Fprintf(os.Stdout, "[line %d] Error %s: %s\n", line, where, message)
 }

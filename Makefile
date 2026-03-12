@@ -10,4 +10,8 @@ repl:
 	@./${BINAY_NAME}
 
 test:
-	go test -v
+	go test -v \
+		github.com/ByteHunter/glox \
+		github.com/ByteHunter/glox/reporting \
+		github.com/ByteHunter/glox/token \
+		github.com/ByteHunter/glox/scanner

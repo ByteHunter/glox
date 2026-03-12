@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"io"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func captureStdout(t *testing.T, runnable func()) string {
+func CaptureStdout(t *testing.T, runnable func()) string {
 	realStdout := os.Stdout
 	defer func() {
 		os.Stdout = realStdout

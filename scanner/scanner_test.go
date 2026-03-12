@@ -1,6 +1,11 @@
-package main
+package scanner
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/ByteHunter/glox/token"
+	"github.com/ByteHunter/glox/utils"
+)
 
 func TestNewScanner(t *testing.T) {
 	scanner := NewScanner("")
@@ -28,7 +33,7 @@ func TestNewScanner(t *testing.T) {
 
 func TestScanTokensWithoutErrors(t *testing.T) {
 	scanner := NewScanner("")
-	tokens, err := scanner.scanTokens()
+	tokens, err := scanner.ScanTokens()
 	if err != nil {
 		t.Errorf("Expected '%v' but got '%v'", nil, err.Error())
 	}
@@ -59,7 +64,7 @@ func TestAdvanceWithSource(t *testing.T) {
 
 func TestAddSimpleToken(t *testing.T) {
 	scanner := NewScanner("")
-	scanner.addSimpleToken(EOF)
+	scanner.addSimpleToken(token.EOF)
 	actual := len(scanner.tokens)
 	expected := 1
 	if actual != expected {
@@ -69,7 +74,7 @@ func TestAddSimpleToken(t *testing.T) {
 
 func TestAddToken(t *testing.T) {
 	scanner := NewScanner("")
-	scanner.addToken(EOF, nil)
+	scanner.addToken(token.EOF, nil)
 	actual := len(scanner.tokens)
 	expected := 1
 	if actual != expected {
@@ -79,20 +84,20 @@ func TestAddToken(t *testing.T) {
 
 func TestSimpleTokens(t *testing.T) {
 	scanner := NewScanner("(){},.;-+*\n")
-	scanner.scanTokens()
+	scanner.ScanTokens()
 	actual := scanner.tokens
-	expected := []Token{
-		{LEFT_PAREN, "(", nil, 1},
-		{RIGHT_PAREN, ")", nil, 1},
-		{LEFT_BRACE, "{", nil, 1},
-		{RIGHT_BRACE, "}", nil, 1},
-		{COMMA, ",", nil, 1},
-		{DOT, ".", nil, 1},
-		{SEMICOLON, ";", nil, 1},
-		{MINUS, "-", nil, 1},
-		{PLUS, "+", nil, 1},
-		{STAR, "*", nil, 1},
-		{EOF, "", nil, 2},
+	expected := []token.Token{
+		{Type: token.LEFT_PAREN, Lexeme: "(", Literal: nil, Line: 1},
+		{Type: token.RIGHT_PAREN, Lexeme: ")", Literal: nil, Line: 1},
+		{Type: token.LEFT_BRACE, Lexeme: "{", Literal: nil, Line: 1},
+		{Type: token.RIGHT_BRACE, Lexeme: "}", Literal: nil, Line: 1},
+		{Type: token.COMMA, Lexeme: ",", Literal: nil, Line: 1},
+		{Type: token.DOT, Lexeme: ".", Literal: nil, Line: 1},
+		{Type: token.SEMICOLON, Lexeme: ";", Literal: nil, Line: 1},
+		{Type: token.MINUS, Lexeme: "-", Literal: nil, Line: 1},
+		{Type: token.PLUS, Lexeme: "+", Literal: nil, Line: 1},
+		{Type: token.STAR, Lexeme: "*", Literal: nil, Line: 1},
+		{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
 	}
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
@@ -108,18 +113,18 @@ func TestSimpleTokens(t *testing.T) {
 
 func TestOperatorTokens(t *testing.T) {
 	scanner := NewScanner("! = < > != == <= >=\n")
-	scanner.scanTokens()
+	scanner.ScanTokens()
 	actual := scanner.tokens
-	expected := []Token{
-		{BANG, "!", nil, 1},
-		{EQUAL, "=", nil, 1},
-		{LESS, "<", nil, 1},
-		{GREATER, ">", nil, 1},
-		{BANQ_EQUAL, "!=", nil, 1},
-		{EQUAL_EQUAL, "==", nil, 1},
-		{LESS_EQUAL, "<=", nil, 1},
-		{GREATER_EQUAL, ">=", nil, 1},
-		{EOF, "", nil, 2},
+	expected := []token.Token{
+		{Type: token.BANG, Lexeme: "!", Literal: nil, Line: 1},
+		{Type: token.EQUAL, Lexeme: "=", Literal: nil, Line: 1},
+		{Type: token.LESS, Lexeme: "<", Literal: nil, Line: 1},
+		{Type: token.GREATER, Lexeme: ">", Literal: nil, Line: 1},
+		{Type: token.BANQ_EQUAL, Lexeme: "!=", Literal: nil, Line: 1},
+		{Type: token.EQUAL_EQUAL, Lexeme: "==", Literal: nil, Line: 1},
+		{Type: token.LESS_EQUAL, Lexeme: "<=", Literal: nil, Line: 1},
+		{Type: token.GREATER_EQUAL, Lexeme: ">=", Literal: nil, Line: 1},
+		{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
 	}
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
@@ -137,12 +142,12 @@ func TestComment(t *testing.T) {
 	content := "// This is a comment\n/\n" +
 		".// This is also a comment\n"
 	scanner := NewScanner(content)
-	scanner.scanTokens()
+	scanner.ScanTokens()
 	actual := scanner.tokens
-	expected := []Token{
-		{SLASH, "/", nil, 2},
-		{DOT, ".", nil, 3},
-		{EOF, "", nil, 4},
+	expected := []token.Token{
+		{Type: token.SLASH, Lexeme: "/", Literal: nil, Line: 2},
+		{Type: token.DOT, Lexeme: ".", Literal: nil, Line: 3},
+		{Type: token.EOF, Lexeme: "", Literal: nil, Line: 4},
 	}
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
@@ -159,11 +164,11 @@ func TestComment(t *testing.T) {
 func TestString(t *testing.T) {
 	content := "\"Example string\"\n"
 	scanner := NewScanner(content)
-	scanner.scanTokens()
+	scanner.ScanTokens()
 	actual := scanner.tokens
-	expected := []Token{
-		{STRING, "\"Example string\"", "Example string", 1},
-		{EOF, "", nil, 2},
+	expected := []token.Token{
+		{Type: token.STRING, Lexeme: "\"Example string\"", Literal: "Example string", Line: 1},
+		{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
 	}
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
@@ -180,11 +185,11 @@ func TestString(t *testing.T) {
 func TestAllowMultilineStrings(t *testing.T) {
 	content := "\"Example of a multiline string\nAnother line\"\n"
 	scanner := NewScanner(content)
-	scanner.scanTokens()
+	scanner.ScanTokens()
 	actual := scanner.tokens
-	expected := []Token{
-		{STRING, "\"Example of a multiline string\nAnother line\"", "Example of a multiline string\nAnother line", 2},
-		{EOF, "", nil, 3},
+	expected := []token.Token{
+		{Type: token.STRING, Lexeme: "\"Example of a multiline string\nAnother line\"", Literal: "Example of a multiline string\nAnother line", Line: 2},
+		{Type: token.EOF, Lexeme: "", Literal: nil, Line: 3},
 	}
 	if len(actual) != len(expected) {
 		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
@@ -201,8 +206,8 @@ func TestAllowMultilineStrings(t *testing.T) {
 func TestUnterminatedString(t *testing.T) {
 	content := "\"Example string\n"
 	scanner := NewScanner(content)
-	actual := captureStdout(t, func() {
-		scanner.scanTokens()
+	actual := utils.CaptureStdout(t, func() {
+		scanner.ScanTokens()
 	})
 
 	expected := "[line 2] Error : Unterminated string.\n"
@@ -215,31 +220,31 @@ func TestNumber(t *testing.T) {
 	var tests = []struct {
 		name     string
 		content  string
-		expected []Token
+		expected []token.Token
 	}{
 		{
 			"Valid number",
 			"123\n",
-			[]Token{
-				{NUMBER, "123", float64(123), 1},
-				{EOF, "", nil, 2},
+			[]token.Token{
+				{Type: token.NUMBER, Lexeme: "123", Literal: float64(123), Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
 			},
 		},
 		{
 			"Valid number",
 			"00001\n",
-			[]Token{
-				{NUMBER, "00001", float64(1), 1},
-				{EOF, "", nil, 2},
+			[]token.Token{
+				{Type: token.NUMBER, Lexeme: "00001", Literal: float64(1), Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
 			},
 		},
 		{
 			"Invalid number",
 			"123.\n",
-			[]Token{
-				{NUMBER, "123", float64(123), 1},
-				{DOT, ".", nil, 1},
-				{EOF, "", nil, 2},
+			[]token.Token{
+				{Type: token.NUMBER, Lexeme: "123", Literal: float64(123), Line: 1},
+				{Type: token.DOT, Lexeme: ".", Literal: nil, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
 			},
 		},
 	}
@@ -247,7 +252,7 @@ func TestNumber(t *testing.T) {
 	for set, test := range tests {
 
 		scanner := NewScanner(test.content)
-		scanner.scanTokens()
+		scanner.ScanTokens()
 		actual := scanner.tokens
 		if len(actual) != len(test.expected) {
 			t.Errorf("Data Set #%d Expected '%v' but got '%v'", set, len(test.expected), len(actual))
@@ -267,8 +272,8 @@ func TestNumber(t *testing.T) {
 func TestUnexpectedCharacter(t *testing.T) {
 	scanner := NewScanner("?")
 
-	actual := captureStdout(t, func() {
-		scanner.scanTokens()
+	actual := utils.CaptureStdout(t, func() {
+		scanner.ScanTokens()
 	})
 	expected := "[line 1] Error : Unexpected character ?.\n"
 	if actual != expected {

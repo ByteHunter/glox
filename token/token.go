@@ -1,4 +1,4 @@
-package main
+package token
 
 import "fmt"
 
@@ -55,30 +55,30 @@ const (
 )
 
 type Token struct {
-	tokenType TokenType
-	lexeme    string
-	literal   any
-	line      int
+	Type    TokenType
+	Lexeme  string
+	Literal any
+	Line    int
 }
 
 func NewToken(tokenType TokenType, lexeme string, literal any, line int) *Token {
 	return &Token{
-		tokenType: tokenType,
-		lexeme:    lexeme,
-		literal:   literal,
-		line:      line,
+		Type:    tokenType,
+		Lexeme:  lexeme,
+		Literal: literal,
+		Line:    line,
 	}
 }
 
 func (token *Token) toString() string {
-	lexeme := token.lexeme
+	lexeme := token.Lexeme
 	if lexeme == "\n" {
-		lexeme = "\\n"
+		lexeme = "\\N"
 	}
 
 	return fmt.Sprintf(
 		"%s %s %v",
-		token.tokenType.String(), lexeme, token.literal,
+		token.Type.String(), lexeme, token.Literal,
 	)
 }
 
