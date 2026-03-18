@@ -6,6 +6,12 @@ import (
 	"testing"
 )
 
+func FailOnError(t *testing.T, e error) {
+	if e != nil {
+		t.Fatal(e)
+	}
+}
+
 func CaptureStdout(t *testing.T, runnable func()) string {
 	realStdout := os.Stdout
 	defer func() {
@@ -13,24 +19,16 @@ func CaptureStdout(t *testing.T, runnable func()) string {
 	}()
 
 	testStdin, testStdout, err := os.Pipe()
-	if err != nil {
-		t.Fatal(err)
-	}
+	FailOnError(t, err)
 	os.Stdout = testStdout
 	runnable()
 	err = testStdout.Close()
-	if err != nil {
-		t.Fatal(err)
-	}
+	FailOnError(t, err)
 
 	outBytes, err := io.ReadAll(testStdin)
-	if err != nil {
-		t.Fatal(err)
-	}
+	FailOnError(t, err)
 	err = testStdin.Close()
-	if err != nil {
-		t.Fatal(err)
-	}
+	FailOnError(t, err)
 
 	return string(outBytes)
 }
