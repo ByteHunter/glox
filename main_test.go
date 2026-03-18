@@ -1,7 +1,11 @@
 package main
 
 import (
+	"flag"
+	"os"
 	"testing"
+
+	"github.com/ByteHunter/glox/utils"
 )
 
 func TestRunExistingFileWithoutErrors(t *testing.T) {
@@ -27,5 +31,53 @@ func TestRunEmptyWithoutErrors(t *testing.T) {
 	err := run("")
 	if err != nil {
 		t.Errorf("run() want nil but got: %s", err)
+	}
+}
+
+func TestRunMainTooManyArguments(t *testing.T) {
+	oldArgs := os.Args
+	defer func() {
+		os.Args = oldArgs
+	}()
+
+	flag.NewFlagSet("Test flags", flag.ExitOnError)
+	os.Args = append([]string{"Test flags"}, []string{"file", "file"}...)
+
+	actualExit := -1
+	actualStdout := utils.CaptureStdout(t, func() {
+		actualExit = RunMain()
+	})
+	expectedExit := 64
+	expectedStdout := "Error: Too many arguments!\n"
+
+	if actualStdout != expectedStdout {
+		t.Errorf("Expected '%v' but got '%v'", expectedStdout, actualStdout)
+	}
+	if actualExit != expectedExit {
+		t.Errorf("Expected '%v' but got '%v'", expectedExit, actualExit)
+	}
+}
+
+func TestRunMainRunFile(t *testing.T) {
+	oldArgs := os.Args
+	defer func() {
+		os.Args = oldArgs
+	}()
+
+	flag.NewFlagSet("Test flags", flag.ExitOnError)
+	os.Args = append([]string{"Test flags"}, []string{"./tests/resources/main.lox"}...)
+
+	actualExit := -1
+	actualStdout := utils.CaptureStdout(t, func() {
+		actualExit = RunMain()
+	})
+	expectedExit := 0
+	expectedStdout := ""
+
+	if actualStdout != expectedStdout {
+		t.Errorf("Expected '%v' but got '%v'", expectedStdout, actualStdout)
+	}
+	if actualExit != expectedExit {
+		t.Errorf("Expected '%v' but got '%v'", expectedExit, actualExit)
 	}
 }

@@ -10,11 +10,15 @@ import (
 )
 
 func main() {
+	os.Exit(RunMain())
+}
+
+func RunMain() int {
 	flag.Parse()
 
 	if flag.NArg() > 1 {
 		fmt.Println("Error: Too many arguments!")
-		os.Exit(64)
+		return 64
 	}
 
 	if flag.NArg() == 1 {
@@ -22,6 +26,8 @@ func main() {
 	} else {
 		runInteractive()
 	}
+
+	return 0
 }
 
 func runFile(fileName string) error {
