@@ -136,12 +136,18 @@ func (s *Scanner) number() {
 	}
 
 	value := s.source[s.start:s.current]
+	float_value := s.parseFloat(value)
+
+	s.addToken(token.NUMBER, float_value)
+}
+
+func (s *Scanner) parseFloat(value string) float64 {
 	float_value, err := strconv.ParseFloat(value, 64)
 	if err != nil {
 		reporting.LoxError(s.line, "Could not parse the literal as float")
 	}
 
-	s.addToken(token.NUMBER, float_value)
+	return float_value
 }
 
 func (s *Scanner) isDigit(b byte) bool {

@@ -54,6 +54,24 @@ func TestIsAtEnd(t *testing.T) {
 	}
 }
 
+func TestMatchIsAtEnd(t *testing.T) {
+	scanner := NewScanner("")
+	actual := scanner.match('=')
+	expected := false
+	if actual != expected {
+		t.Errorf("Expected to be '%v' but got '%v'", expected, actual)
+	}
+}
+
+func TestPeekNextAtEnd(t *testing.T) {
+	scanner := NewScanner("")
+	actual := scanner.peekNext()
+	expected := byte('\x00')
+	if actual != expected {
+		t.Errorf("Expected to be '%v' but got '%v'", expected, actual)
+	}
+}
+
 func TestAdvanceWithSource(t *testing.T) {
 	scanner := NewScanner("(")
 	actual := scanner.advance()
@@ -267,6 +285,38 @@ func TestNumber(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestNumberScan(t *testing.T) {
+	scanner := NewScanner("123.456")
+	scanner.number()
+	actual := scanner.tokens
+	expected := []token.Token{
+		{Type: token.NUMBER, Lexeme: "123.456", Literal: float64(123.456), Line: 1},
+	}
+	if len(actual) != len(expected) {
+		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
+		t.FailNow()
+	}
+	for i := range expected {
+		e := expected[i]
+		a := actual[i]
+		if a != e {
+			t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+		}
+	}
+}
+
+func TestErrorParsingFloatNumber(t *testing.T) {
+	scanner := NewScanner("")
+
+	actual := utils.CaptureStdout(t, func() {
+		scanner.parseFloat("invalid")
+	})
+	expected := "[line 1] Error : Could not parse the literal as float\n"
+	if actual != expected {
+		t.Errorf("Expected '%v' but got '%v'", expected, actual)
 	}
 }
 
