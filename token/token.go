@@ -73,7 +73,7 @@ func NewToken(tokenType TokenType, lexeme string, literal any, line int) *Token 
 func (token *Token) toString() string {
 	lexeme := token.Lexeme
 	if lexeme == "\n" {
-		lexeme = "\\N"
+		lexeme = "\\n"
 	}
 
 	return fmt.Sprintf(
