@@ -180,6 +180,28 @@ func TestComment(t *testing.T) {
 	}
 }
 
+func TestIdentifiers(t *testing.T) {
+	content := "var something\n"
+	scanner := NewScanner(content)
+	scanner.ScanTokens()
+	actual := scanner.tokens
+	expected := []token.Token{
+		{Type: token.VAR, Lexeme: "var", Literal: nil, Line: 1},
+		{Type: token.IDENTIFIER, Lexeme: "something", Literal: nil, Line: 1},
+		{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
+	}
+	if len(actual) != len(expected) {
+		t.Errorf("Expected '%v' but got '%v'", len(expected), len(actual))
+	}
+	for i := range expected {
+		e := expected[i]
+		a := actual[i]
+		if a != e {
+			t.Errorf("Expected '%v' but got '%v' at index %d", e, a, i)
+		}
+	}
+}
+
 func TestString(t *testing.T) {
 	content := "\"Example string\"\n"
 	scanner := NewScanner(content)

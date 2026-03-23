@@ -8,6 +8,25 @@ import (
 	"github.com/ByteHunter/glox/token"
 )
 
+var keywords = map[string]token.TokenType{
+	"and":    token.AND,
+	"class":  token.CLASS,
+	"else":   token.ELSE,
+	"false":  token.FALSE,
+	"fun":    token.FUN,
+	"for":    token.FOR,
+	"if":     token.IF,
+	"nil":    token.NIL,
+	"or":     token.OR,
+	"print":  token.PRINT,
+	"return": token.RETURN,
+	"super":  token.SUPER,
+	"this":   token.THIS,
+	"true":   token.TRUE,
+	"var":    token.VAR,
+	"while":  token.WHILE,
+}
+
 type Scanner struct {
 	source               string
 	tokens               []token.Token
@@ -99,8 +118,27 @@ func (s *Scanner) scanToken() {
 			s.number()
 			break
 		}
+		if s.isAlpha(b) {
+			s.identifier()
+			break
+		}
 		reporting.LoxError(s.line, fmt.Sprintf("Unexpected character %c.", b))
 	}
+}
+
+func (s *Scanner) identifier() {
+	for s.isAlphaNumeric(s.peek()) {
+		s.advance()
+	}
+
+	value := s.source[s.start:s.current]
+	tokenType, isKeyword := keywords[value]
+
+	if !isKeyword {
+		tokenType = token.IDENTIFIER
+	}
+
+	s.addSimpleToken(tokenType)
 }
 
 func (s *Scanner) string() {
@@ -152,6 +190,16 @@ func (s *Scanner) parseFloat(value string) float64 {
 
 func (s *Scanner) isDigit(b byte) bool {
 	return b >= '0' && b <= '9'
+}
+
+func (s *Scanner) isAlpha(b byte) bool {
+	return b == '_' ||
+		(b >= 'a' && b <= 'z') ||
+		(b >= 'A' && b <= 'Z')
+}
+
+func (s *Scanner) isAlphaNumeric(b byte) bool {
+	return s.isAlpha(b) || s.isDigit(b)
 }
 
 func (s *Scanner) match(expected byte) bool {
