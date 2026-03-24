@@ -3,9 +3,21 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go/format"
 	"os"
 	"strings"
 )
+
+type FieldDefinition struct {
+	key   string
+	value string
+}
+type FieldList []FieldDefinition
+type SubClassDefinition struct {
+	name   string
+	fields FieldList
+}
+type SubClassList []SubClassDefinition
 
 func main() {
 	os.Exit(RunMain())
@@ -26,10 +38,37 @@ func RunMain() int {
 	}
 	defer file.Close()
 
-	contents, err := generateContent("Expression")
+	var classes = SubClassList{
+		{
+			"Binary",
+			FieldList{
+				{"left", "Expression"},
+				{"operator", "token.Token"},
+				{"right", "Expression"},
+			},
+		},
+		{
+			"Grouping",
+			FieldList{
+				{"expression", "Expression"},
+			},
+		},
+	}
+
+	contents, err := generateContent("Expression", classes)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		return 1
+	}
+
+	doFormat := true
+	if doFormat {
+		formatted, err := format.Source([]byte(contents))
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+			return 1
+		}
+		contents = string(formatted)
 	}
 
 	_, err = file.WriteString(contents)
@@ -53,11 +92,37 @@ func getFile(outputDir, baseName string) (*os.File, error) {
 	return file, nil
 }
 
-func generateContent(baseName string) (string, error) {
+func generateContent(baseName string, classes SubClassList) (string, error) {
 	// Starting the file content
 	contents := fmt.Sprintf("package %s\n\n", strings.ToLower(baseName))
-	contents += fmt.Sprintf("type %s interface {\n", baseName)
-	contents += "}\n\n"
+	contents += "import (\n"
+	contents += "\"github.com/ByteHunter/glox/token\"\n"
+	contents += ")\n"
+	contents += fmt.Sprintf("type %s any\n\n", baseName)
+
+	// Subclasses
+	for _, subClass := range classes {
+		// Define the subclass' struct
+		contents += fmt.Sprintf("type %s struct {\n", subClass.name)
+		contents += baseName + "\n"
+		for _, field := range subClass.fields {
+			contents += fmt.Sprintf("%s %s\n", field.key, field.value)
+		}
+		contents += "}\n"
+
+		// Define the sublcass' constructor
+		contents += fmt.Sprintf("func New%s(", subClass.name)
+		for _, field := range subClass.fields {
+			contents += fmt.Sprintf("%s %s, ", field.key, field.value)
+		}
+		contents += fmt.Sprintf(") *%s{\n", subClass.name)
+		contents += fmt.Sprintf("return &%s{\n", subClass.name)
+		for _, field := range subClass.fields {
+			contents += fmt.Sprintf("%s: %s,\n", field.key, field.key)
+		}
+		contents += "}\n"
+		contents += "}\n"
+	}
 
 	return contents, nil
 }
