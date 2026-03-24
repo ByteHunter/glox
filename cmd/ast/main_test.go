@@ -10,9 +10,13 @@ import (
 
 func TestRunMain(t *testing.T) {
 	oldArgs := os.Args
+	wd, _ := os.Getwd()
+	os.Chdir("../../")
 	defer func() {
 		os.Args = oldArgs
+		os.Chdir(wd)
 	}()
+
 
 	flag.NewFlagSet("Test flags", flag.ExitOnError)
 	os.Args = append([]string{"Test flags"}, []string{"tests"}...)
@@ -34,8 +38,11 @@ func TestRunMain(t *testing.T) {
 
 func TestRunMainWithoutArguments(t *testing.T) {
 	oldArgs := os.Args
+	wd, _ := os.Getwd()
+	os.Chdir("../../")
 	defer func() {
 		os.Args = oldArgs
+		os.Chdir(wd)
 	}()
 
 	flag.NewFlagSet("Test flags", flag.ExitOnError)
@@ -46,7 +53,7 @@ func TestRunMainWithoutArguments(t *testing.T) {
 		actualExit = RunMain()
 	})
 	expectedExit := 1
-	expectedStdout := "Usage go run cmd/ast/main.go <output-path>"
+	expectedStdout := "Usage go run cmd/ast/main.go <output-path>\n"
 
 	if actualStdout != expectedStdout {
 		t.Errorf("Expected '%v' but got '%v'", expectedStdout, actualStdout)
@@ -54,4 +61,8 @@ func TestRunMainWithoutArguments(t *testing.T) {
 	if actualExit != expectedExit {
 		t.Errorf("Expected '%v' but got '%v'", expectedExit, actualExit)
 	}
+}
+
+func TestDefineAst(t *testing.T) {
+	t.Skip()
 }
