@@ -11,10 +11,10 @@ repl:
 	@./${BINAY_NAME}
 
 test:
-	go test -v . ./utils ./reporting ./token ./scanner
+	go test -v . ./utils ./reporting ./token ./scanner ./cmd/ast
 
 coverage:
-	go test -coverprofile=${TESTS_DIR}/coverage.out . ./utils ./reporting ./token ./scanner
+	go test -coverprofile=${TESTS_DIR}/coverage.out . ./utils ./reporting ./token ./scanner ./cmd/ast
 
 serve-coverage:
 	go tool cover -html=${TESTS_DIR}/coverage.out -o=${TESTS_DIR}/coverage.html
