@@ -9,74 +9,74 @@ type Expression interface {
 }
 
 type Visitor interface {
-	visitBinaryExpression(*Binary) any
-	visitGroupingExpression(*Grouping) any
-	visitLiteralExpression(*Literal) any
-	visitUnaryExpression(*Unary) any
+	VisitBinaryExpression(*Binary) any
+	VisitGroupingExpression(*Grouping) any
+	VisitLiteralExpression(*Literal) any
+	VisitUnaryExpression(*Unary) any
 }
 
 type Binary struct {
 	Expression
-	left     Expression
-	operator token.Token
-	right    Expression
+	Left     Expression
+	Operator token.Token
+	Right    Expression
 }
 
 func NewBinary(left Expression, operator token.Token, right Expression) *Binary {
 	return &Binary{
-		left:     left,
-		operator: operator,
-		right:    right,
+		Left:     left,
+		Operator: operator,
+		Right:    right,
 	}
 }
 
-func (binary *Binary) accept(v Visitor) any {
-	return v.visitBinaryExpression(binary)
+func (binary *Binary) Accept(v Visitor) any {
+	return v.VisitBinaryExpression(binary)
 }
 
 type Grouping struct {
 	Expression
-	expression Expression
+	Expr Expression
 }
 
-func NewGrouping(expression Expression) *Grouping {
+func NewGrouping(expr Expression) *Grouping {
 	return &Grouping{
-		expression: expression,
+		Expr: expr,
 	}
 }
 
-func (grouping *Grouping) accept(v Visitor) any {
-	return v.visitGroupingExpression(grouping)
+func (grouping *Grouping) Accept(v Visitor) any {
+	return v.VisitGroupingExpression(grouping)
 }
 
 type Literal struct {
 	Expression
-	value any
+	Value any
 }
 
 func NewLiteral(value any) *Literal {
 	return &Literal{
-		value: value,
+		Value: value,
 	}
 }
 
-func (literal *Literal) accept(v Visitor) any {
-	return v.visitLiteralExpression(literal)
+func (literal *Literal) Accept(v Visitor) any {
+	return v.VisitLiteralExpression(literal)
 }
 
 type Unary struct {
 	Expression
-	operator token.Token
-	right    Expression
+	Operator token.Token
+	Right    Expression
 }
 
 func NewUnary(operator token.Token, right Expression) *Unary {
 	return &Unary{
-		operator: operator,
-		right:    right,
+		Operator: operator,
+		Right:    right,
 	}
 }
 
-func (unary *Unary) accept(v Visitor) any {
-	return v.visitUnaryExpression(unary)
+func (unary *Unary) Accept(v Visitor) any {
+	return v.VisitUnaryExpression(unary)
 }

@@ -23,28 +23,28 @@ var Classes = SubClassList{
 	SubClassDefinition{
 		"Binary",
 		FieldList{
-			{"left", "Expression"},
-			{"operator", "token.Token"},
-			{"right", "Expression"},
+			{"Left", "Expression"},
+			{"Operator", "token.Token"},
+			{"Right", "Expression"},
 		},
 	},
 	SubClassDefinition{
 		"Grouping",
 		FieldList{
-			{"expression", "Expression"},
+			{"Expr", "Expression"},
 		},
 	},
 	SubClassDefinition{
 		"Literal",
 		FieldList{
-			{"value", "any"},
+			{"Value", "any"},
 		},
 	},
 	SubClassDefinition{
 		"Unary",
 		FieldList{
-			{"operator", "token.Token"},
-			{"right", "Expression"},
+			{"Operator", "token.Token"},
+			{"Right", "Expression"},
 		},
 	},
 }
@@ -137,7 +137,7 @@ func BuildVistitorInterface(subClasses SubClassList) string {
 
 	buffer.WriteString("type Visitor interface {\n")
 	for _, subClass := range subClasses {
-		buffer.WriteString("visit" + subClass.name + "Expression(*" + subClass.name + ") any\n")
+		buffer.WriteString("Visit" + subClass.name + "Expression(*" + subClass.name + ") any\n")
 	}
 	buffer.WriteString("}\n\n")
 
@@ -151,6 +151,7 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	buffer.WriteString("type " + subClass.name + " struct {\n")
 	buffer.WriteString(baseName + "\n")
 
+	// Define the fields
 	for _, field := range subClass.fields {
 		buffer.WriteString("" + field.key + " " + field.value + "\n")
 	}
@@ -159,19 +160,19 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	// Define the  constructor
 	buffer.WriteString("func New" + subClass.name + "(")
 	for _, field := range subClass.fields {
-		buffer.WriteString("" + field.key + " " + field.value + ", ")
+		buffer.WriteString("" + strings.ToLower(field.key) + " " + field.value + ", ")
 	}
 	buffer.WriteString(") *" + subClass.name + " {\n")
 	buffer.WriteString("return &" + subClass.name + "{\n")
 	for _, field := range subClass.fields {
-		buffer.WriteString("" + field.key + ": " + field.key + ",\n")
+		buffer.WriteString("" + field.key + ": " + strings.ToLower(field.key) + ",\n")
 	}
 	buffer.WriteString("}\n")
 	buffer.WriteString("}\n\n")
 
 	// Define the accept method
-	buffer.WriteString("func (" + strings.ToLower(subClass.name) + " *" + subClass.name + ") accept(v Visitor) any {\n")
-	buffer.WriteString("return v.visit" + subClass.name + "Expression(" + strings.ToLower(subClass.name) + ")\n")
+	buffer.WriteString("func (" + strings.ToLower(subClass.name) + " *" + subClass.name + ") Accept(v Visitor) any {\n")
+	buffer.WriteString("return v.Visit" + subClass.name + "Expression(" + strings.ToLower(subClass.name) + ")\n")
 	buffer.WriteString("}\n")
 
 	return buffer.String()

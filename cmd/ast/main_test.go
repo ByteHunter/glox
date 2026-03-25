@@ -14,7 +14,7 @@ var SimpleSubClassList = SubClassList{
 	SubClassDefinition{
 		"TestClass",
 		FieldList{
-			{"field", "Expression"},
+			{"Field", "Expression"},
 		},
 	},
 }
@@ -22,15 +22,15 @@ var CompleteSubClassList = SubClassList{
 	SubClassDefinition{
 		"Binary",
 		FieldList{
-			{"left", "Expression"},
-			{"operator", "token.Token"},
-			{"right", "Expression"},
+			{"Left", "Expression"},
+			{"Operator", "token.Token"},
+			{"Right", "Expression"},
 		},
 	},
 	SubClassDefinition{
 		"Grouping",
 		FieldList{
-			{"expression", "Expression"},
+			{"Expr", "Expression"},
 		},
 	},
 }
@@ -101,8 +101,8 @@ func ExampleBuildSubClassContent() {
 	// }
 	// }
 	//
-	// func (literal *Literal) accept(v Visitor) any {
-	// return v.visitLiteralExpression(literal)
+	// func (literal *Literal) Accept(v Visitor) any {
+	// return v.VisitLiteralExpression(literal)
 	// }
 }
 
