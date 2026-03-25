@@ -10,6 +10,9 @@ type Expression interface {
 
 type Visitor interface {
 	visitBinaryExpression(*Binary) any
+	visitGroupingExpression(*Grouping) any
+	visitLiteralExpression(*Literal) any
+	visitUnaryExpression(*Unary) any
 }
 
 type Binary struct {
@@ -42,6 +45,10 @@ func NewGrouping(expression Expression) *Grouping {
 	}
 }
 
+func (grouping *Grouping) accept(v Visitor) any {
+	return v.visitGroupingExpression(grouping)
+}
+
 type Literal struct {
 	Expression
 	value any
@@ -51,6 +58,10 @@ func NewLiteral(value any) *Literal {
 	return &Literal{
 		value: value,
 	}
+}
+
+func (literal *Literal) accept(v Visitor) any {
+	return v.visitLiteralExpression(literal)
 }
 
 type Unary struct {
@@ -64,4 +75,8 @@ func NewUnary(operator token.Token, right Expression) *Unary {
 		operator: operator,
 		right:    right,
 	}
+}
+
+func (unary *Unary) accept(v Visitor) any {
+	return v.visitUnaryExpression(unary)
 }
