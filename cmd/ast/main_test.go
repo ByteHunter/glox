@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"testing"
 
@@ -92,6 +93,18 @@ func TestGenerageContent(t *testing.T) {
 	t.Skip()
 }
 
+func ExampleBuildContent() {
+	content, _ := BuildContent("TestClass", EmptySubClassList)
+	fmt.Print(content)
+	// Output:
+	// package testclass
+	//
+	// import (
+	// "github.com/ByteHunter/glox/token"
+	// )
+	// type TestClass any
+}
+
 func BenchmarkGenerageContentEmpty(b *testing.B) {
 	for b.Loop() {
 		generateContent("TestClass", EmptySubClassList)
@@ -100,7 +113,7 @@ func BenchmarkGenerageContentEmpty(b *testing.B) {
 
 func BenchmarkBuildContentEmpty(b *testing.B) {
 	for b.Loop() {
-		buildContent("TestClass", EmptySubClassList)
+		BuildContent("TestClass", EmptySubClassList)
 	}
 }
 
@@ -112,7 +125,7 @@ func BenchmarkGenerageContentSimple(b *testing.B) {
 
 func BenchmarkBuildContentSimple(b *testing.B) {
 	for b.Loop() {
-		buildContent("TestClass", SimpleSubClassList)
+		BuildContent("TestClass", SimpleSubClassList)
 	}
 }
 
@@ -124,6 +137,6 @@ func BenchmarkGenerageContentComplete(b *testing.B) {
 
 func BenchmarkBuildContentComplete(b *testing.B) {
 	for b.Loop() {
-		buildContent("TestClass", CompleteSubClassList)
+		BuildContent("TestClass", CompleteSubClassList)
 	}
 }

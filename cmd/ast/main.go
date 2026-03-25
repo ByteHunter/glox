@@ -55,7 +55,7 @@ func RunMain() int {
 		},
 	}
 
-	contents, err := buildContent("Expression", classes)
+	contents, err := BuildContent("Expression", classes)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		return 1
@@ -127,7 +127,7 @@ func generateContent(baseName string, classes SubClassList) (string, error) {
 	return contents, nil
 }
 
-func buildContent(baseName string, classes SubClassList) (string, error) {
+func BuildContent(baseName string, classes SubClassList) (string, error) {
 	var buffer strings.Builder
 	buffer.Reset()
 	buffer.WriteString("")
@@ -141,14 +141,14 @@ func buildContent(baseName string, classes SubClassList) (string, error) {
 
 	// Subclasses
 	for _, subClass := range classes {
-		subClassContent := buildSubClassContent(baseName, subClass)
+		subClassContent := BuildSubClassContent(baseName, subClass)
 		buffer.WriteString(subClassContent)
 	}
 
 	return buffer.String(), nil
 }
 
-func buildSubClassContent(baseName string,subClass SubClassDefinition) string {
+func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	var buffer strings.Builder
 	buffer.Reset()
 	// Define the subclass' struct
