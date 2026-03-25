@@ -141,28 +141,37 @@ func buildContent(baseName string, classes SubClassList) (string, error) {
 
 	// Subclasses
 	for _, subClass := range classes {
-		// Define the subclass' struct
-		buffer.WriteString("type " + subClass.name + " struct {\n")
-		buffer.WriteString(baseName + "\n")
-
-		for _, field := range subClass.fields {
-			buffer.WriteString("" + field.key + " " + field.value + "\n")
-		}
-		buffer.WriteString("}\n")
-
-		// Define the sublcass' constructor
-		buffer.WriteString("func New" + subClass.name + "(")
-		for _, field := range subClass.fields {
-			buffer.WriteString("" + field.key + " " + field.value + ", ")
-		}
-		buffer.WriteString(") *" + subClass.name + "{\n")
-		buffer.WriteString("return &" + subClass.name + "{\n")
-		for _, field := range subClass.fields {
-			buffer.WriteString("" + field.key + ": " + field.key + ",\n")
-		}
-		buffer.WriteString("}\n")
-		buffer.WriteString("}\n")
+		subClassContent := buildSubClassContent(baseName, subClass)
+		buffer.WriteString(subClassContent)
 	}
 
 	return buffer.String(), nil
+}
+
+func buildSubClassContent(baseName string,subClass SubClassDefinition) string {
+	var buffer strings.Builder
+	buffer.Reset()
+	// Define the subclass' struct
+	buffer.WriteString("type " + subClass.name + " struct {\n")
+	buffer.WriteString(baseName + "\n")
+
+	for _, field := range subClass.fields {
+		buffer.WriteString("" + field.key + " " + field.value + "\n")
+	}
+	buffer.WriteString("}\n")
+
+	// Define the sublcass' constructor
+	buffer.WriteString("func New" + subClass.name + "(")
+	for _, field := range subClass.fields {
+		buffer.WriteString("" + field.key + " " + field.value + ", ")
+	}
+	buffer.WriteString(") *" + subClass.name + "{\n")
+	buffer.WriteString("return &" + subClass.name + "{\n")
+	for _, field := range subClass.fields {
+		buffer.WriteString("" + field.key + ": " + field.key + ",\n")
+	}
+	buffer.WriteString("}\n")
+	buffer.WriteString("}\n")
+
+	return buffer.String()
 }
