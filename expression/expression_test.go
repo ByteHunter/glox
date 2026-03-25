@@ -9,7 +9,7 @@ import (
 func ExampleNewBinary() {
 	fmt.Println(NewBinary(nil, token.Token{}, nil))
 	// Output:
-	// &{<nil> <nil> {0  <nil> 0} <nil>}
+	// &{<nil> <nil> {LEFT_PAREN  <nil> 0} <nil>}
 }
 
 func ExampleGrouping() {
@@ -27,5 +27,5 @@ func ExampleNewLiteral() {
 func ExampleNewUnary() {
 	fmt.Println(NewUnary(token.Token{}, nil))
 	// Output:
-	// &{<nil> {0  <nil> 0} <nil>}
+	// &{<nil> {LEFT_PAREN  <nil> 0} <nil>}
 }
