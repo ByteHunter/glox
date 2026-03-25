@@ -4,7 +4,13 @@ import (
 	"github.com/ByteHunter/glox/token"
 )
 
-type Expression any
+type Expression interface {
+	accept(v Visitor) any
+}
+
+type Visitor interface {
+	visitBinaryExpression(*Binary) any
+}
 
 type Binary struct {
 	Expression
@@ -19,6 +25,10 @@ func NewBinary(left Expression, operator token.Token, right Expression) *Binary 
 		operator: operator,
 		right:    right,
 	}
+}
+
+func (binary *Binary) accept(v Visitor) any {
+	return v.visitBinaryExpression(binary)
 }
 
 type Grouping struct {
