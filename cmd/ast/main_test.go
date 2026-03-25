@@ -71,7 +71,13 @@ func ExampleBuildContent() {
 	// import (
 	// "github.com/ByteHunter/glox/token"
 	// )
-	// type TestClass any
+	//
+	// type TestClass interface {
+	// accept(v Visitor) any
+	// }
+	//
+	// type Visitor interface {
+	// }
 }
 
 func ExampleBuildSubClassContent() {
@@ -93,6 +99,10 @@ func ExampleBuildSubClassContent() {
 	// return &Literal{
 	// value: value,
 	// }
+	// }
+	//
+	// func (literal *Literal) accept(v Visitor) any {
+	// return v.visitLiteralExpression(literal)
 	// }
 }
 

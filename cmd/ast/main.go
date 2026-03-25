@@ -111,8 +111,16 @@ func BuildContent(baseName string, classes SubClassList) (string, error) {
 	buffer.WriteString("package " + strings.ToLower(baseName) + "\n\n")
 	buffer.WriteString("import (\n")
 	buffer.WriteString("\"github.com/ByteHunter/glox/token\"\n")
-	buffer.WriteString(")\n")
-	buffer.WriteString("type " + baseName + " any\n\n")
+	buffer.WriteString(")\n\n")
+
+	// Expression interface
+	buffer.WriteString("type " + baseName + " interface {\n")
+	buffer.WriteString("accept(v Visitor) any\n")
+	buffer.WriteString("}\n\n")
+
+	// Visitor interface
+	visitorInterfaceContent := BuildVistitorInterface(classes)
+	buffer.WriteString(visitorInterfaceContent)
 
 	// Subclasses
 	for _, subClass := range classes {
@@ -123,10 +131,23 @@ func BuildContent(baseName string, classes SubClassList) (string, error) {
 	return buffer.String(), nil
 }
 
+func BuildVistitorInterface(subClasses SubClassList) string {
+	var buffer strings.Builder
+	buffer.Reset()
+
+	buffer.WriteString("type Visitor interface {\n")
+	for _, subClass := range subClasses {
+		buffer.WriteString("visit" + subClass.name + "Expression(*" + subClass.name + ") any\n")
+	}
+	buffer.WriteString("}\n\n")
+
+	return buffer.String()
+}
+
 func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	var buffer strings.Builder
 	buffer.Reset()
-	// Define the subclass' struct
+	// Define the struct
 	buffer.WriteString("type " + subClass.name + " struct {\n")
 	buffer.WriteString(baseName + "\n")
 
@@ -135,7 +156,7 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	}
 	buffer.WriteString("}\n\n")
 
-	// Define the sublcass' constructor
+	// Define the  constructor
 	buffer.WriteString("func New" + subClass.name + "(")
 	for _, field := range subClass.fields {
 		buffer.WriteString("" + field.key + " " + field.value + ", ")
@@ -146,6 +167,11 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 		buffer.WriteString("" + field.key + ": " + field.key + ",\n")
 	}
 	buffer.WriteString("}\n")
+	buffer.WriteString("}\n\n")
+
+	// Define the accept method
+	buffer.WriteString("func (" + strings.ToLower(subClass.name) + " *" + subClass.name + ") accept(v Visitor) any {\n")
+	buffer.WriteString("return v.visit" + subClass.name + "Expression(" + strings.ToLower(subClass.name) + ")\n")
 	buffer.WriteString("}\n")
 
 	return buffer.String()
