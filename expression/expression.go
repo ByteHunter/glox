@@ -1,6 +1,8 @@
 package expression
 
-import "github.com/ByteHunter/glox/token"
+import (
+	"github.com/ByteHunter/glox/token"
+)
 
 type Expression any
 
@@ -13,8 +15,43 @@ type Binary struct {
 
 func NewBinary(left Expression, operator token.Token, right Expression) *Binary {
 	return &Binary{
-		left: left,
+		left:     left,
 		operator: operator,
-		right: right,
+		right:    right,
+	}
+}
+
+type Grouping struct {
+	Expression
+	expression Expression
+}
+
+func NewGrouping(expression Expression) *Grouping {
+	return &Grouping{
+		expression: expression,
+	}
+}
+
+type Literal struct {
+	Expression
+	value any
+}
+
+func NewLiteral(value any) *Literal {
+	return &Literal{
+		value: value,
+	}
+}
+
+type Unary struct {
+	Expression
+	operator token.Token
+	right    Expression
+}
+
+func NewUnary(operator token.Token, right Expression) *Unary {
+	return &Unary{
+		operator: operator,
+		right:    right,
 	}
 }
