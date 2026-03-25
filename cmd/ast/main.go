@@ -19,6 +19,36 @@ type SubClassDefinition struct {
 }
 type SubClassList []SubClassDefinition
 
+var Classes = SubClassList{
+	SubClassDefinition{
+		"Binary",
+		FieldList{
+			{"left", "Expression"},
+			{"operator", "token.Token"},
+			{"right", "Expression"},
+		},
+	},
+	SubClassDefinition{
+		"Grouping",
+		FieldList{
+			{"expression", "Expression"},
+		},
+	},
+	SubClassDefinition{
+		"Literal",
+		FieldList{
+			{"value", "any"},
+		},
+	},
+	SubClassDefinition{
+		"Unary",
+		FieldList{
+			{"operator", "token.Token"},
+			{"right", "Expression"},
+		},
+	},
+}
+
 func main() {
 	os.Exit(RunMain())
 }
@@ -38,38 +68,18 @@ func RunMain() int {
 	}
 	defer file.Close()
 
-	var classes = SubClassList{
-		{
-			"Binary",
-			FieldList{
-				{"left", "Expression"},
-				{"operator", "token.Token"},
-				{"right", "Expression"},
-			},
-		},
-		{
-			"Grouping",
-			FieldList{
-				{"expression", "Expression"},
-			},
-		},
-	}
-
-	contents, err := BuildContent("Expression", classes)
+	contents, err := BuildContent("Expression", Classes)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		return 1
 	}
 
-	doFormat := true
-	if doFormat {
-		formatted, err := format.Source([]byte(contents))
-		if err != nil {
-			fmt.Printf("Error: %s\n", err.Error())
-			return 1
-		}
-		contents = string(formatted)
+	formatted, err := format.Source([]byte(contents))
+	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
+		return 1
 	}
+	contents = string(formatted)
 
 	_, err = file.WriteString(contents)
 	if err != nil {
@@ -123,14 +133,14 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	for _, field := range subClass.fields {
 		buffer.WriteString("" + field.key + " " + field.value + "\n")
 	}
-	buffer.WriteString("}\n")
+	buffer.WriteString("}\n\n")
 
 	// Define the sublcass' constructor
 	buffer.WriteString("func New" + subClass.name + "(")
 	for _, field := range subClass.fields {
 		buffer.WriteString("" + field.key + " " + field.value + ", ")
 	}
-	buffer.WriteString(") *" + subClass.name + "{\n")
+	buffer.WriteString(") *" + subClass.name + " {\n")
 	buffer.WriteString("return &" + subClass.name + "{\n")
 	for _, field := range subClass.fields {
 		buffer.WriteString("" + field.key + ": " + field.key + ",\n")
