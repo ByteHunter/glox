@@ -11,6 +11,9 @@ run:
 repl:
 	@./${BINAY_NAME}
 
+ast:
+	go run ./cmd/ast/main.go expression
+
 test:
 	go test ${TEST_SET}
 
