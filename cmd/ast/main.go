@@ -55,7 +55,7 @@ func RunMain() int {
 		},
 	}
 
-	contents, err := generateContent("Expression", classes)
+	contents, err := buildContent("Expression", classes)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		return 1
@@ -125,4 +125,44 @@ func generateContent(baseName string, classes SubClassList) (string, error) {
 	}
 
 	return contents, nil
+}
+
+func buildContent(baseName string, classes SubClassList) (string, error) {
+	var buffer strings.Builder
+	buffer.Reset()
+	buffer.WriteString("")
+
+	// Starting the file content
+	buffer.WriteString("package " + strings.ToLower(baseName) + "\n\n")
+	buffer.WriteString("import (\n")
+	buffer.WriteString("\"github.com/ByteHunter/glox/token\"\n")
+	buffer.WriteString(")\n")
+	buffer.WriteString("type " + baseName + " any\n\n")
+
+	// Subclasses
+	for _, subClass := range classes {
+		// Define the subclass' struct
+		buffer.WriteString("type " + subClass.name + " struct {\n")
+		buffer.WriteString(baseName + "\n")
+
+		for _, field := range subClass.fields {
+			buffer.WriteString("" + field.key + " " + field.value + "\n")
+		}
+		buffer.WriteString("}\n")
+
+		// Define the sublcass' constructor
+		buffer.WriteString("func New" + subClass.name + "(")
+		for _, field := range subClass.fields {
+			buffer.WriteString("" + field.key + " " + field.value + ", ")
+		}
+		buffer.WriteString(") *" + subClass.name + "{\n")
+		buffer.WriteString("return &" + subClass.name + "{\n")
+		for _, field := range subClass.fields {
+			buffer.WriteString("" + field.key + ": " + field.key + ",\n")
+		}
+		buffer.WriteString("}\n")
+		buffer.WriteString("}\n")
+	}
+
+	return buffer.String(), nil
 }

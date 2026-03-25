@@ -8,6 +8,32 @@ import (
 	"github.com/ByteHunter/glox/utils"
 )
 
+var EmptySubClassList = SubClassList{}
+var SimpleSubClassList = SubClassList{
+	SubClassDefinition{
+		"TestClass",
+		FieldList{
+			{"field", "Expression"},
+		},
+	},
+}
+var CompleteSubClassList = SubClassList{
+	SubClassDefinition{
+		"Binary",
+		FieldList{
+			{"left", "Expression"},
+			{"operator", "token.Token"},
+			{"right", "Expression"},
+		},
+	},
+	SubClassDefinition{
+		"Grouping",
+		FieldList{
+			{"expression", "Expression"},
+		},
+	},
+}
+
 func TestRunMain(t *testing.T) {
 	oldArgs := os.Args
 	wd, _ := os.Getwd()
@@ -16,7 +42,6 @@ func TestRunMain(t *testing.T) {
 		os.Args = oldArgs
 		os.Chdir(wd)
 	}()
-
 
 	flag.NewFlagSet("Test flags", flag.ExitOnError)
 	os.Args = append([]string{"Test flags"}, []string{"tests"}...)
@@ -63,6 +88,42 @@ func TestRunMainWithoutArguments(t *testing.T) {
 	}
 }
 
-func TestDefineAst(t *testing.T) {
+func TestGenerageContent(t *testing.T) {
 	t.Skip()
+}
+
+func BenchmarkGenerageContentEmpty(b *testing.B) {
+	for b.Loop() {
+		generateContent("TestClass", EmptySubClassList)
+	}
+}
+
+func BenchmarkBuildContentEmpty(b *testing.B) {
+	for b.Loop() {
+		buildContent("TestClass", EmptySubClassList)
+	}
+}
+
+func BenchmarkGenerageContentSimple(b *testing.B) {
+	for b.Loop() {
+		generateContent("TestClass", SimpleSubClassList)
+	}
+}
+
+func BenchmarkBuildContentSimple(b *testing.B) {
+	for b.Loop() {
+		buildContent("TestClass", SimpleSubClassList)
+	}
+}
+
+func BenchmarkGenerageContentComplete(b *testing.B) {
+	for b.Loop() {
+		generateContent("TestClass", CompleteSubClassList)
+	}
+}
+
+func BenchmarkBuildContentComplete(b *testing.B) {
+	for b.Loop() {
+		buildContent("TestClass", CompleteSubClassList)
+	}
 }
