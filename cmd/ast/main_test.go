@@ -105,33 +105,15 @@ func ExampleBuildContent() {
 	// type TestClass any
 }
 
-func BenchmarkGenerageContentEmpty(b *testing.B) {
-	for b.Loop() {
-		generateContent("TestClass", EmptySubClassList)
-	}
-}
-
 func BenchmarkBuildContentEmpty(b *testing.B) {
 	for b.Loop() {
 		BuildContent("TestClass", EmptySubClassList)
 	}
 }
 
-func BenchmarkGenerageContentSimple(b *testing.B) {
-	for b.Loop() {
-		generateContent("TestClass", SimpleSubClassList)
-	}
-}
-
 func BenchmarkBuildContentSimple(b *testing.B) {
 	for b.Loop() {
 		BuildContent("TestClass", SimpleSubClassList)
-	}
-}
-
-func BenchmarkGenerageContentComplete(b *testing.B) {
-	for b.Loop() {
-		generateContent("TestClass", CompleteSubClassList)
 	}
 }
 

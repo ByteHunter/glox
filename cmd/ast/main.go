@@ -92,41 +92,6 @@ func getFile(outputDir, baseName string) (*os.File, error) {
 	return file, nil
 }
 
-func generateContent(baseName string, classes SubClassList) (string, error) {
-	// Starting the file content
-	contents := fmt.Sprintf("package %s\n\n", strings.ToLower(baseName))
-	contents += "import (\n"
-	contents += "\"github.com/ByteHunter/glox/token\"\n"
-	contents += ")\n"
-	contents += fmt.Sprintf("type %s any\n\n", baseName)
-
-	// Subclasses
-	for _, subClass := range classes {
-		// Define the subclass' struct
-		contents += fmt.Sprintf("type %s struct {\n", subClass.name)
-		contents += baseName + "\n"
-		for _, field := range subClass.fields {
-			contents += fmt.Sprintf("%s %s\n", field.key, field.value)
-		}
-		contents += "}\n"
-
-		// Define the sublcass' constructor
-		contents += fmt.Sprintf("func New%s(", subClass.name)
-		for _, field := range subClass.fields {
-			contents += fmt.Sprintf("%s %s, ", field.key, field.value)
-		}
-		contents += fmt.Sprintf(") *%s{\n", subClass.name)
-		contents += fmt.Sprintf("return &%s{\n", subClass.name)
-		for _, field := range subClass.fields {
-			contents += fmt.Sprintf("%s: %s,\n", field.key, field.key)
-		}
-		contents += "}\n"
-		contents += "}\n"
-	}
-
-	return contents, nil
-}
-
 func BuildContent(baseName string, classes SubClassList) (string, error) {
 	var buffer strings.Builder
 	buffer.Reset()
