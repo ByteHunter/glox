@@ -5,7 +5,7 @@ import (
 )
 
 type Expression interface {
-	accept(v Visitor) any
+	Accept(v Visitor) any
 }
 
 type Visitor interface {

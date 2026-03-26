@@ -115,7 +115,7 @@ func BuildContent(baseName string, classes SubClassList) (string, error) {
 
 	// Expression interface
 	buffer.WriteString("type " + baseName + " interface {\n")
-	buffer.WriteString("accept(v Visitor) any\n")
+	buffer.WriteString("Accept(v Visitor) any\n")
 	buffer.WriteString("}\n\n")
 
 	// Visitor interface
