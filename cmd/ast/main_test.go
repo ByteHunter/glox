@@ -73,7 +73,7 @@ func ExampleBuildContent() {
 	// )
 	//
 	// type TestClass interface {
-	// accept(v Visitor) any
+	// Accept(v Visitor) any
 	// }
 	//
 	// type Visitor interface {
