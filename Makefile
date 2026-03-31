@@ -1,5 +1,6 @@
 BINAY_NAME=glox
 TESTS_DIR=./tests
+TEST_SET=. ./utils ./reporting ./token ./scanner ./expression ./astprinter ./cmd/ast
 
 build:
 	go build -o glox .
@@ -10,11 +11,17 @@ run:
 repl:
 	@./${BINAY_NAME}
 
+ast:
+	go run ./cmd/ast/main.go expression
+
 test:
-	go test -v . ./utils ./reporting ./token ./scanner
+	go test ${TEST_SET}
+
+test-verbose:
+	go test -v ${TEST_SET}
 
 coverage:
-	go test -coverprofile=${TESTS_DIR}/coverage.out . ./utils ./reporting ./token ./scanner
+	go test -coverprofile=${TESTS_DIR}/coverage.out ${TEST_SET}
 
 serve-coverage:
 	go tool cover -html=${TESTS_DIR}/coverage.out -o=${TESTS_DIR}/coverage.html
