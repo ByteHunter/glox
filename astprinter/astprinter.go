@@ -19,7 +19,7 @@ func (a *AstPrinter) VisitBinaryExpression(expr *expression.Binary) any {
 }
 
 func (a *AstPrinter) VisitGroupingExpression(expr *expression.Grouping) any {
-	return nil
+	return a.Parentesize("group", expr.Expr)
 }
 
 func (a *AstPrinter) VisitLiteralExpression(expr *expression.Literal) any {
@@ -31,7 +31,7 @@ func (a *AstPrinter) VisitLiteralExpression(expr *expression.Literal) any {
 }
 
 func (a *AstPrinter) VisitUnaryExpression(expr *expression.Unary) any {
-	return nil
+	return a.Parentesize(expr.Operator.Lexeme, expr.Right)
 }
 
 func (a *AstPrinter) Print(expr expression.Expression) any {
