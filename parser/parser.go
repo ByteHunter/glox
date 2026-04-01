@@ -69,7 +69,7 @@ func (p *Parser) Term() expression.Expression {
 func (p *Parser) Factor() expression.Expression {
 	var expr expression.Expression = p.Unary()
 
-	for p.match(token.MINUS, token.PLUS) {
+	for p.match(token.SLASH, token.STAR) {
 		var operator token.Token = p.previous()
 		var right expression.Expression = p.Unary()
 		expr = expression.NewBinary(expr, operator, right)
