@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ByteHunter/glox/astprinter"
 	"github.com/ByteHunter/glox/parser"
 	scan "github.com/ByteHunter/glox/scanner"
 )
@@ -76,7 +77,8 @@ func run(source string) error {
 	scanner := scan.NewScanner(source)
 	t, _ := scanner.ScanTokens()
 	parser := parser.NewParser(t)
-	parser.Parse()
+	expr := parser.Parse()
+	fmt.Println(astprinter.NewAstPrinter().Print(expr))
 
 	return nil
 }
