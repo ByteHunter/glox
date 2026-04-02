@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ByteHunter/glox/parser"
 	scan "github.com/ByteHunter/glox/scanner"
 )
 
@@ -73,7 +74,9 @@ func run(source string) error {
 	}
 
 	scanner := scan.NewScanner(source)
-	scanner.ScanTokens()
+	t, _ := scanner.ScanTokens()
+	parser := parser.NewParser(t)
+	parser.Parse()
 
 	return nil
 }
