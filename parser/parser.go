@@ -1,12 +1,28 @@
 package parser
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ByteHunter/glox/expression"
+	"github.com/ByteHunter/glox/reporting"
 	"github.com/ByteHunter/glox/token"
 )
+
+type ParseError struct {
+	token   token.Token
+	message string
+}
+
+func NewParseError(token token.Token, message string) *ParseError {
+	return &ParseError{
+		token:   token,
+		message: message,
+	}
+}
+
+func (p ParseError) Error() string {
+	return fmt.Sprintf("ParseError %s", p.message)
+}
 
 type Parser struct {
 	tokens  []token.Token
@@ -23,96 +39,127 @@ func (p *Parser) Parse() expression.Expression {
 	if len(p.tokens) == 0 {
 		return nil
 	}
-	return p.Expression()
+
+	expr, err := p.Expression()
+	if err != nil {
+		return nil
+	}
+
+	return expr
 }
 
-func (p *Parser) Expression() expression.Expression {
+func (p *Parser) Expression() (expression.Expression, error) {
 	return p.Equality()
 }
 
-func (p *Parser) Equality() expression.Expression {
-	var expr expression.Expression = p.Comparison()
+func (p *Parser) Equality() (expression.Expression, error) {
+	expr, err := p.Comparison()
+	if err != nil {
+		return expr, err
+	}
 
 	for p.match(token.BANQ_EQUAL, token.EQUAL_EQUAL) {
 		var operator token.Token = p.previous()
-		var right expression.Expression = p.Comparison()
+		right, err := p.Comparison()
 		expr = expression.NewBinary(expr, operator, right)
+		if err != nil {
+			return expr, err
+		}
 	}
 
-	return expr
+	return expr, nil
 }
 
-func (p *Parser) Comparison() expression.Expression {
-	var expr expression.Expression = p.Term()
+func (p *Parser) Comparison() (expression.Expression, error) {
+	expr, err := p.Term()
+	if err != nil {
+		return expr, err
+	}
 
 	for p.match(token.GREATER, token.GREATER_EQUAL, token.LESS, token.LESS_EQUAL) {
 		var operator token.Token = p.previous()
-		var right expression.Expression = p.Term()
+		right, err := p.Term()
 		expr = expression.NewBinary(expr, operator, right)
+		if err != nil {
+			return expr, err
+		}
 	}
 
-	return expr
+	return expr, nil
 }
 
-func (p *Parser) Term() expression.Expression {
-	var expr expression.Expression = p.Factor()
+func (p *Parser) Term() (expression.Expression, error) {
+	expr, err := p.Factor()
+	if err != nil {
+		return expr, err
+	}
 
 	for p.match(token.MINUS, token.PLUS) {
 		var operator token.Token = p.previous()
-		var right expression.Expression = p.Factor()
+		right, err := p.Factor()
 		expr = expression.NewBinary(expr, operator, right)
+		if err != nil {
+			return expr, err
+		}
 	}
 
-	return expr
+	return expr, nil
 }
 
-func (p *Parser) Factor() expression.Expression {
-	var expr expression.Expression = p.Unary()
+func (p *Parser) Factor() (expression.Expression, error) {
+	expr, err := p.Unary()
+	if err != nil {
+		return expr, err
+	}
 
 	for p.match(token.SLASH, token.STAR) {
 		var operator token.Token = p.previous()
-		var right expression.Expression = p.Unary()
+		right, err := p.Unary()
 		expr = expression.NewBinary(expr, operator, right)
+		if err != nil {
+			return expr, err
+		}
 	}
 
-	return expr
+	return expr, nil
 }
 
-func (p *Parser) Unary() expression.Expression {
+func (p *Parser) Unary() (expression.Expression, error) {
 	if p.match(token.BANG, token.MINUS) {
 		var operator token.Token = p.previous()
-		var right expression.Expression = p.Unary()
-		return expression.NewUnary(operator, right)
+		right, err := p.Unary()
+		return expression.NewUnary(operator, right), err
 	}
 
 	return p.Primary()
 }
 
-func (p *Parser) Primary() expression.Expression {
+func (p *Parser) Primary() (expression.Expression, error) {
 	if p.match(token.FALSE) {
-		return expression.NewLiteral(false)
+		return expression.NewLiteral(false), nil
 	}
 	if p.match(token.TRUE) {
-		return expression.NewLiteral(true)
+		return expression.NewLiteral(true), nil
 	}
 	if p.match(token.NIL) {
-		return expression.NewLiteral(nil)
+		return expression.NewLiteral(nil), nil
 	}
 
 	if p.match(token.NUMBER, token.STRING) {
-		return expression.NewLiteral(p.previous().Literal)
+		return expression.NewLiteral(p.previous().Literal), nil
 	}
 
 	if p.match(token.LEFT_PAREN) {
-		var expr expression.Expression = p.Expression()
+		expr, _ := p.Expression()
 		_, err := p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
 		if err != nil {
-			fmt.Println(err.Error())
+			return expression.NewGrouping(expr), err
 		}
-		return expression.NewGrouping(expr)
+		return expression.NewGrouping(expr), nil
 	}
 
-	return nil
+	reporting.LoxTokenError(p.peek(), "Expected expression")
+	return nil, NewParseError(p.peek(), "Expected expression.")
 }
 
 func (p *Parser) match(tokenTypes ...token.TokenType) bool {
@@ -159,5 +206,6 @@ func (p *Parser) consume(expected token.TokenType, message string) (token.Token,
 		return p.advance(), nil
 	}
 
-	return token.Token{}, errors.New(message)
+	reporting.LoxTokenError(p.previous(), message)
+	return p.previous(), NewParseError(p.previous(), message)
 }

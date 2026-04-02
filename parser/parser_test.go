@@ -2,13 +2,14 @@ package parser
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/ByteHunter/glox/astprinter"
 	"github.com/ByteHunter/glox/expression"
 	"github.com/ByteHunter/glox/token"
 )
 
-func printExpression(expr expression.Expression) {
+func printExpression(expr expression.Expression, _ error) {
 	fmt.Printf("%s", astprinter.NewAstPrinter().Print(expr))
 }
 
@@ -47,6 +48,7 @@ func ExampleParser_Parse_only_eof() {
 
 	fmt.Println(parser.Parse())
 	// Output:
+	// [line 1] Error at end: Expected expression
 	// <nil>
 }
 
@@ -151,14 +153,14 @@ func ExampleParser_Primary_parenthesize_with_error() {
 		*token.NewToken(token.LEFT_PAREN, "(", nil, 1),
 		*token.NewToken(token.NUMBER, "42", 42, 1),
 		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
-		*token.NewToken(token.NUMBER, "42", 42, 1),
+		*token.NewToken(token.NUMBER, "41", 41, 1),
 		*token.NewToken(token.EOF, "", nil, 1),
 	})
 
 	printExpression(p.Primary())
 	// Output:
-	// Expect ')' after expression.
-	// (group (== 42 42))
+	// [line 1] Error at '41': Expect ')' after expression.
+	// (group (== 42 41))
 }
 
 func ExampleParser_Comparison() {
@@ -277,4 +279,17 @@ func ExampleParser_Unary_minus() {
 	printExpression(p.Unary())
 	// Output:
 	// (- 42)
+}
+
+func TestPeek(t *testing.T) {
+	p := NewParser([]token.Token{
+		*token.NewToken(token.MINUS, "-", nil, 1),
+		*token.NewToken(token.EOF, "", nil, 1),
+	})
+	tok := p.peek()
+	actual := tok.Type
+	expected := token.MINUS
+	if actual != expected {
+		t.Errorf("Expected to be '%v' but got '%v'", expected, actual)
+	}
 }
