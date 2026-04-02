@@ -209,3 +209,28 @@ func (p *Parser) consume(expected token.TokenType, message string) (token.Token,
 	reporting.LoxTokenError(p.previous(), message)
 	return p.previous(), NewParseError(p.previous(), message)
 }
+
+func (p *Parser) synchronize() {
+	p.advance()
+
+	for !p.isAtEnd() {
+		if p.previous().Type == token.SEMICOLON {
+			return
+		}
+
+		switch p.peek().Type {
+		case
+			token.CLASS,
+			token.FUN,
+			token.VAR,
+			token.FOR,
+			token.IF,
+			token.WHILE,
+			token.PRINT,
+			token.RETURN:
+			return
+		}
+
+		p.advance()
+	}
+}
