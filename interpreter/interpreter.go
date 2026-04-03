@@ -63,6 +63,10 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) any {
 			return nil
 		}
 		return l <= r
+	case token.BANQ_EQUAL:
+		return !i.isEqual(left, right)
+	case token.EQUAL_EQUAL:
+		return i.isEqual(left, right)
 	case token.MINUS:
 		l, r, err := i.parseTwoOperands(left, right)
 		if err != nil {
@@ -167,4 +171,26 @@ func (i *Interpreter) getBoolean(v any) bool {
 		return false
 	}
 	return true
+}
+
+func (i *Interpreter) isEqual(a, b any) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil {
+		return false
+	}
+	atype := reflect.TypeOf(a).String()
+	btype := reflect.TypeOf(b).String()
+
+	if atype != btype {
+		return false
+	}
+
+	switch atype {
+	case "int", "string":
+		return a == b;
+	}
+
+	return false
 }

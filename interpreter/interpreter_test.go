@@ -453,3 +453,87 @@ func ExampleInterpreter_Evaluate_binary_less_equal_error() {
 	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
+
+func ExampleInterpreter_Evaluate_binary_bang_equal() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(43),
+		*token.NewToken(token.BANQ_EQUAL, "!=", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// true
+}
+
+func ExampleInterpreter_Evaluate_binary_equal_equal() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(42),
+		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// true
+}
+
+func ExampleInterpreter_Evaluate_binary_equal_both_nil() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(nil),
+		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
+		expression.NewLiteral(nil),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// true
+}
+
+func ExampleInterpreter_Evaluate_binary_equal_one_nil() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(nil),
+		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// false
+}
+
+func ExampleInterpreter_Evaluate_binary_equal_not_same_types() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(42),
+		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
+		expression.NewLiteral(true),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// false
+}
+
+func ExampleInterpreter_Evaluate_binary_equal_false() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(true),
+		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
+		expression.NewLiteral(false),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// false
+}
