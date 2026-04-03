@@ -16,6 +16,63 @@ func NewInterpreter() *Interpreter {
 }
 
 func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) any {
+	if expr.Left == nil {
+		reporting.LoxError(
+			expr.Operator.Line,
+			"Left operand expected to be an expression, nil found (InterpreterError)",
+		)
+		return nil
+	}
+	if expr.Right == nil {
+		reporting.LoxError(
+			expr.Operator.Line,
+			"Right operand expected to be an expression, nil found (InterpreterError)",
+		)
+		return nil
+	}
+	left := i.Evaluate(expr.Left)
+	right := i.Evaluate(expr.Right)
+
+	switch expr.Operator.Type {
+	case token.MINUS:
+		l, err := i.getFloat(left)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		r, err := i.getFloat(right)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		return l - r
+	case token.SLASH:
+		l, err := i.getFloat(left)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		r, err := i.getFloat(right)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		return l / r
+	case token.STAR:
+		l, err := i.getFloat(left)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		r, err := i.getFloat(right)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		return l * r
+	}
+
+	reporting.LoxError(expr.Operator.Line, "Unknown binary operator (InterpreterError)")
 	return nil
 }
 
