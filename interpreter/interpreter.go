@@ -38,7 +38,11 @@ func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) any {
 	case token.BANG:
 		return !i.getBoolean(right)
 	case token.MINUS:
-		res, _ := i.getFloat(right)
+		res, err := i.getFloat(right)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return res
+		}
 		return -res
 	}
 
@@ -55,7 +59,7 @@ func (i *Interpreter) getFloat(v any) (float64, error) {
 	case int:
 		return float64(t), nil
 	default:
-		return math.NaN(), errors.New("Cannot convert to float64, unexpected type")
+		return math.NaN(), errors.New("Cannot convert to float64, unexpected type (ConversionError)")
 	}
 }
 

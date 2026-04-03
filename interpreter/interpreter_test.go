@@ -35,6 +35,20 @@ func ExampleInterpreter_Evaluate_unary_unkown_token() {
 	// <nil>
 }
 
+func ExampleInterpreter_Evaluate_unary_minus_nan() {
+	i := NewInterpreter()
+	expr := expression.NewUnary(
+		*token.NewToken(token.MINUS, "-", nil, 1),
+		expression.NewLiteral(true),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// NaN
+}
+
 func ExampleInterpreter_Evaluate_unary_minus() {
 	i := NewInterpreter()
 	expr := expression.NewUnary(
