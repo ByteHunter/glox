@@ -36,12 +36,13 @@ func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) any {
 
 	switch expr.Operator.Type {
 	case token.BANG:
-		return ! i.getBoolean(right)
+		return !i.getBoolean(right)
 	case token.MINUS:
 		res, _ := i.getFloat(right)
 		return -res
 	}
 
+	reporting.LoxError(expr.Operator.Line, "Unknown unary operator (InterpreterError)")
 	return nil
 }
 

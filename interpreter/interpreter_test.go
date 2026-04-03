@@ -21,6 +21,20 @@ func ExampleInterpreter_Evaluate_unary_nil() {
 	// <nil>
 }
 
+func ExampleInterpreter_Evaluate_unary_unkown_token() {
+	i := NewInterpreter()
+	expr := expression.NewUnary(
+		*token.NewToken(token.PLUS, "+", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// [line 1] Error : Unknown unary operator (InterpreterError)
+	// <nil>
+}
+
 func ExampleInterpreter_Evaluate_unary_minus() {
 	i := NewInterpreter()
 	expr := expression.NewUnary(
