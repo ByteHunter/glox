@@ -3,6 +3,7 @@ package interpreter
 import (
 	"errors"
 	"math"
+	"reflect"
 
 	"github.com/ByteHunter/glox/expression"
 	"github.com/ByteHunter/glox/reporting"
@@ -70,6 +71,20 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) any {
 			return nil
 		}
 		return l * r
+	case token.PLUS:
+		left_type := reflect.TypeOf(left).String()
+		right_type := reflect.TypeOf(right).String()
+		if left_type == "int" && right_type == "int" {
+			return float64(left.(int)) + float64(right.(int))
+		}
+		if left_type == "string" && right_type == "string" {
+			l := left.(string)
+			r := right.(string)
+			return l + r
+		}
+
+		reporting.LoxError(expr.Operator.Line, "Incompatible types in PLUS operation (InterpreterError)")
+		return nil
 	}
 
 	reporting.LoxError(expr.Operator.Line, "Unknown binary operator (InterpreterError)")

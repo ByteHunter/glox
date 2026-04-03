@@ -294,3 +294,46 @@ func ExampleInterpreter_Evaluate_binary_star_error_right() {
 	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
+
+func ExampleInterpreter_Evaluate_binary_plus_numbers() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(42),
+		*token.NewToken(token.PLUS, "+", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// 84
+}
+
+func ExampleInterpreter_Evaluate_binary_plus_string() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral("hello "),
+		*token.NewToken(token.PLUS, "+", nil, 1),
+		expression.NewLiteral("world"),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// hello world
+}
+
+func ExampleInterpreter_Evaluate_binary_plus_incompatible_types() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral("42"),
+		*token.NewToken(token.PLUS, "+", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// [line 1] Error : Incompatible types in PLUS operation (InterpreterError)
+	// <nil>
+}
