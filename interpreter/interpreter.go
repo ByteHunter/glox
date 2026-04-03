@@ -35,37 +35,50 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) any {
 	right := i.Evaluate(expr.Right)
 
 	switch expr.Operator.Type {
-	case token.MINUS:
-		l, err := i.getFloat(left)
+	case token.GREATER:
+		l, r, err := i.parseTwoOperands(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
 		}
-		r, err := i.getFloat(right)
+		return l > r
+	case token.GREATER_EQUAL:
+		l, r, err := i.parseTwoOperands(left, right)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		return l >= r
+	case token.LESS:
+		l, r, err := i.parseTwoOperands(left, right)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		return l < r
+	case token.LESS_EQUAL:
+		l, r, err := i.parseTwoOperands(left, right)
+		if err != nil {
+			reporting.LoxError(expr.Operator.Line, err.Error())
+			return nil
+		}
+		return l <= r
+	case token.MINUS:
+		l, r, err := i.parseTwoOperands(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
 		}
 		return l - r
 	case token.SLASH:
-		l, err := i.getFloat(left)
-		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
-			return nil
-		}
-		r, err := i.getFloat(right)
+		l, r, err := i.parseTwoOperands(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
 		}
 		return l / r
 	case token.STAR:
-		l, err := i.getFloat(left)
-		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
-			return nil
-		}
-		r, err := i.getFloat(right)
+		l, r, err := i.parseTwoOperands(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
@@ -133,6 +146,20 @@ func (i *Interpreter) getFloat(v any) (float64, error) {
 	default:
 		return math.NaN(), errors.New("Cannot convert to float64, unexpected type (ConversionError)")
 	}
+}
+
+func (i *Interpreter) parseTwoOperands(left, right any) (float64, float64, error) {
+	l, le := i.getFloat(left)
+	r, re := i.getFloat(right)
+
+	if le != nil {
+		return l, r, le
+	}
+	if re != nil {
+		return l, r, re
+	}
+
+	return l, r, nil
 }
 
 func (i *Interpreter) getBoolean(v any) bool {

@@ -337,3 +337,119 @@ func ExampleInterpreter_Evaluate_binary_plus_incompatible_types() {
 	// [line 1] Error : Incompatible types in PLUS operation (InterpreterError)
 	// <nil>
 }
+
+func ExampleInterpreter_Evaluate_binary_greater() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(43),
+		*token.NewToken(token.GREATER, ">", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// true
+}
+
+func ExampleInterpreter_Evaluate_binary_greater_error() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(43),
+		*token.NewToken(token.GREATER, ">", nil, 1),
+		expression.NewLiteral(nil),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// <nil>
+}
+
+func ExampleInterpreter_Evaluate_binary_greater_equal() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(42),
+		*token.NewToken(token.GREATER_EQUAL, ">=", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// true
+}
+
+func ExampleInterpreter_Evaluate_binary_greater_equal_error() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(42),
+		*token.NewToken(token.GREATER_EQUAL, ">=", nil, 1),
+		expression.NewLiteral(nil),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// <nil>
+}
+
+func ExampleInterpreter_Evaluate_binary_less() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(41),
+		*token.NewToken(token.LESS, "<", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// true
+}
+
+func ExampleInterpreter_Evaluate_binary_less_error() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(41),
+		*token.NewToken(token.LESS, "<", nil, 1),
+		expression.NewLiteral(nil),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// <nil>
+}
+
+func ExampleInterpreter_Evaluate_binary_less_equal() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(42),
+		*token.NewToken(token.LESS_EQUAL, "<=", nil, 1),
+		expression.NewLiteral(42),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// true
+}
+
+func ExampleInterpreter_Evaluate_binary_less_equal_error() {
+	i := NewInterpreter()
+	expr := expression.NewBinary(
+		expression.NewLiteral(42),
+		*token.NewToken(token.LESS_EQUAL, "<=", nil, 1),
+		expression.NewLiteral(nil),
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// <nil>
+}
