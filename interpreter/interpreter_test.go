@@ -7,6 +7,20 @@ import (
 	"github.com/ByteHunter/glox/token"
 )
 
+func ExampleInterpreter_Evaluate_unary_nil() {
+	i := NewInterpreter()
+	expr := expression.NewUnary(
+		*token.NewToken(token.MINUS, "-", nil, 1),
+		nil,
+	)
+	result := i.Evaluate(expr)
+	fmt.Println(result)
+
+	// Output:
+	// [line 1] Error : Expected an expression, nil found (InterpreterError)
+	// <nil>
+}
+
 func ExampleInterpreter_Evaluate_unary_minus() {
 	i := NewInterpreter()
 	expr := expression.NewUnary(
