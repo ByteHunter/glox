@@ -104,7 +104,7 @@ func ExampleAstPrinter_Parentesize_unary() {
 }
 
 func ExampleAstPrinter_Print_nil_expression() {
-	result := NewAstPrinter().Print(nil)
+	result, _ := NewAstPrinter().Print(nil)
 
 	fmt.Println(result)
 	// Output:
@@ -113,7 +113,7 @@ func ExampleAstPrinter_Print_nil_expression() {
 
 func ExampleAstPrinter_Print() {
 	// Testing expression: -123 * 45.67
-	result := NewAstPrinter().Print(
+	result, _ := NewAstPrinter().Print(
 		expression.NewBinary(
 			expression.NewUnary(
 				*token.NewToken(token.MINUS, "-", nil, 1),

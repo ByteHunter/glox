@@ -14,29 +14,29 @@ func NewAstPrinter() *AstPrinter {
 	return &AstPrinter{}
 }
 
-func (a *AstPrinter) VisitBinaryExpression(expr *expression.Binary) any {
-	return a.Parentesize(expr.Operator.Lexeme, expr.Left, expr.Right)
+func (a *AstPrinter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
+	return a.Parentesize(expr.Operator.Lexeme, expr.Left, expr.Right), nil
 }
 
-func (a *AstPrinter) VisitGroupingExpression(expr *expression.Grouping) any {
-	return a.Parentesize("group", expr.Expr)
+func (a *AstPrinter) VisitGroupingExpression(expr *expression.Grouping) (any, error) {
+	return a.Parentesize("group", expr.Expr), nil
 }
 
-func (a *AstPrinter) VisitLiteralExpression(expr *expression.Literal) any {
+func (a *AstPrinter) VisitLiteralExpression(expr *expression.Literal) (any, error) {
 	if expr.Value == nil {
-		return "nil"
+		return "nil", nil
 	}
 
-	return fmt.Sprintf("%v", expr.Value)
+	return fmt.Sprintf("%v", expr.Value), nil
 }
 
-func (a *AstPrinter) VisitUnaryExpression(expr *expression.Unary) any {
-	return a.Parentesize(expr.Operator.Lexeme, expr.Right)
+func (a *AstPrinter) VisitUnaryExpression(expr *expression.Unary) (any, error) {
+	return a.Parentesize(expr.Operator.Lexeme, expr.Right), nil
 }
 
-func (a *AstPrinter) Print(expr expression.Expression) any {
+func (a *AstPrinter) Print(expr expression.Expression) (any, error) {
 	if expr == nil {
-		return "nil"
+		return "nil", nil
 	}
 
 	return expr.Accept(a)
@@ -52,7 +52,8 @@ func (a *AstPrinter) Parentesize(name string, exprs ...expression.Expression) st
 			buffer.WriteString(" nil")
 			continue
 		}
-		fmt.Fprintf(&buffer, " %v", expr.Accept(a))
+		r, _ := expr.Accept(a)
+		fmt.Fprintf(&buffer, " %v", r)
 	}
 	buffer.WriteString(")")
 

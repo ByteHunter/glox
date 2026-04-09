@@ -79,7 +79,8 @@ func run(source string) error {
 	t, _ := scanner.ScanTokens()
 	parser := parser.NewParser(t)
 	expr := parser.Parse()
-	fmt.Println(astprinter.NewAstPrinter().Print(expr))
+	result, _ := astprinter.NewAstPrinter().Print(expr)
+	fmt.Println(result)
 	interpreter.NewInterpreter().Interpret(expr)
 
 	return nil
