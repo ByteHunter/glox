@@ -12,13 +12,13 @@ import (
 )
 
 type RuntimeError struct {
-	operator token.Token
+	Operator token.Token
 	message  string
 }
 
 func NewRuntimeError(operator token.Token, message string) *RuntimeError {
 	return &RuntimeError{
-		operator: operator,
+		Operator: operator,
 		message:  message,
 	}
 }
@@ -35,54 +35,48 @@ func NewInterpreter() *Interpreter {
 
 func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
 	if expr.Left == nil {
-		reporting.LoxError(
-			expr.Operator.Line,
-			"Left operand expected to be an expression, nil found (InterpreterError)",
-		)
 		return nil, NewRuntimeError(
 			expr.Operator,
 			"Left operand expected to be an expression, nil found (InterpreterError)",
 		)
 	}
 	if expr.Right == nil {
-		reporting.LoxError(
-			expr.Operator.Line,
-			"Right operand expected to be an expression, nil found (InterpreterError)",
-		)
 		return nil, NewRuntimeError(
 			expr.Operator,
 			"Right operand expected to be an expression, nil found (InterpreterError)",
 		)
 	}
-	left, _ := i.Evaluate(expr.Left)
-	right, _ := i.Evaluate(expr.Right)
+	left, err := i.Evaluate(expr.Left)
+	if err != nil {
+		return nil, NewRuntimeError(expr.Operator, err.Error())
+	}
+	right, err := i.Evaluate(expr.Right)
+	if err != nil {
+		return nil, NewRuntimeError(expr.Operator, err.Error())
+	}
 
 	switch expr.Operator.Type {
 	case token.GREATER:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l > r, nil
 	case token.GREATER_EQUAL:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l >= r, nil
 	case token.LESS:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l < r, nil
 	case token.LESS_EQUAL:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l <= r, nil
@@ -93,21 +87,18 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 	case token.MINUS:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l - r, nil
 	case token.SLASH:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l / r, nil
 	case token.STAR:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l * r, nil
@@ -128,11 +119,9 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 			return float64(left.(int)) + float64(right.(int)), nil
 		}
 
-		reporting.LoxError(expr.Operator.Line, "Incompatible types in PLUS operation (InterpreterError)")
 		return nil, NewRuntimeError(expr.Operator, "Incompatible types in PLUS operation (InterpreterError)")
 	}
 
-	reporting.LoxError(expr.Operator.Line, "Unknown binary operator (InterpreterError)")
 	return nil, NewRuntimeError(expr.Operator, "Unknown binary operator (InterpreterError)")
 }
 
@@ -146,10 +135,12 @@ func (i *Interpreter) VisitLiteralExpression(expr *expression.Literal) (any, err
 
 func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) {
 	if expr.Right == nil {
-		reporting.LoxError(expr.Operator.Line, "Expected an expression, nil found (InterpreterError)")
-		return nil, nil
+		return nil, NewRuntimeError(expr.Operator, "Expected an expression, nil found (InterpreterError)")
 	}
-	right, _ := i.Evaluate(expr.Right)
+	right, err := i.Evaluate(expr.Right)
+	if err != nil {
+		return nil, NewRuntimeError(expr.Operator, err.Error())
+	}
 
 	switch expr.Operator.Type {
 	case token.BANG:
@@ -157,14 +148,12 @@ func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) 
 	case token.MINUS:
 		res, err := i.getFloat(right)
 		if err != nil {
-			reporting.LoxError(expr.Operator.Line, err.Error())
-			return res, nil
+			return res, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return -res, nil
 	}
 
-	reporting.LoxError(expr.Operator.Line, "Unknown unary operator (InterpreterError)")
-	return nil, nil
+	return nil, NewRuntimeError(expr.Operator, "Unknown unary operator (InterpreterError)")
 }
 
 func (i *Interpreter) Evaluate(expr expression.Expression) (any, error) {
@@ -172,7 +161,10 @@ func (i *Interpreter) Evaluate(expr expression.Expression) (any, error) {
 }
 
 func (i *Interpreter) Interpret(expr expression.Expression) {
-	value, _ := i.Evaluate(expr)
+	value, err := i.Evaluate(expr)
+	if err != nil {
+		reporting.LoxError(err.(RuntimeError).Operator.Line, err.Error())
+	}
 	fmt.Println(value)
 }
 

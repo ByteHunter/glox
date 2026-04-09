@@ -465,11 +465,12 @@ func ExampleInterpreter_Evaluate_binary_less_equal_error() {
 		*token.NewToken(token.LESS_EQUAL, "<=", nil, 1),
 		expression.NewLiteral(nil),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
