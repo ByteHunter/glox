@@ -160,6 +160,11 @@ func (i *Interpreter) Evaluate(expr expression.Expression) any {
 	return expr.Accept(i)
 }
 
+func (i *Interpreter) Interpret(expr expression.Expression) {
+	value := i.Evaluate(expr)
+	fmt.Println(value)
+}
+
 func (i *Interpreter) getFloat(v any) (float64, error) {
 	switch t := v.(type) {
 	case int:
