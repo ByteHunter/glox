@@ -13,6 +13,117 @@ import (
 
 // Evaluating Unary expressions
 
+func TestInterpreter_VisitLiteral(t *testing.T) {
+	var tests = []struct {
+		expr     *expression.Literal
+		expected any
+	}{
+		{
+			expression.NewLiteral(42),
+			42,
+		},
+		{
+			expression.NewLiteral(42.1),
+			42.1,
+		},
+		{
+			expression.NewLiteral(int(42)),
+			int(42),
+		},
+		{
+			expression.NewLiteral(float64(42)),
+			float64(42),
+		},
+		{
+			expression.NewLiteral(true),
+			true,
+		},
+		{
+			expression.NewLiteral("hello"),
+			"hello",
+		},
+		{
+			expression.NewLiteral(nil),
+			nil,
+		},
+	}
+
+	for set, test := range tests {
+		testName := fmt.Sprintf("#%d", set)
+		t.Run(testName, func(t *testing.T) {
+			actual, _ := NewInterpreter().VisitLiteralExpression(
+				test.expr,
+			)
+			if actual != test.expected {
+				t.Errorf("Expected '%v' but got '%v'", test.expected, actual)
+			}
+		})
+	}
+}
+
+func TestInterpreter_VisitUnary(t *testing.T) {
+	minusToken := token.NewToken(token.MINUS, "-", nil, 1)
+	plusToken := token.NewToken(token.PLUS, "+", nil, 1)
+	// bangToken := token.NewToken(token.BANG, "!", nil, 1)
+	var tests = []struct {
+		expr           *expression.Unary
+		expectedResult any
+		expectedError  error
+	}{
+		{
+			expression.NewUnary(*minusToken, expression.NewLiteral(42)),
+			float64(-42),
+			nil,
+		},
+		{
+			expression.NewUnary(*minusToken, expression.NewLiteral(-42)),
+			float64(42),
+			nil,
+		},
+		{
+			expression.NewUnary(*minusToken, expression.NewLiteral(int(42))),
+			float64(-42),
+			nil,
+		},
+		{
+			expression.NewUnary(*minusToken, expression.NewLiteral(float64(42))),
+			float64(-42),
+			nil,
+		},
+		{
+			expression.NewUnary(*minusToken, nil),
+			nil,
+			NewRuntimeError(*minusToken, "Expected an expression, nil found"),
+		},
+		{
+			expression.NewUnary(*plusToken, expression.NewLiteral(42)),
+			nil,
+			NewRuntimeError(*minusToken, "Unknown unary operator"),
+		},
+	}
+
+	for set, test := range tests {
+		testName := fmt.Sprintf("#%d", set)
+		t.Run(testName, func(t *testing.T) {
+			actual, err := NewInterpreter().VisitUnaryExpression(
+				test.expr,
+			)
+			if actual != test.expectedResult {
+				t.Errorf("Expected '%v' but got '%v'", test.expectedResult, actual)
+			}
+			if test.expectedError != nil && err == nil {
+				t.Errorf("Expected the error to be '%s', but got nil", test.expectedError)
+			}
+			if test.expectedError == nil && err != nil {
+				t.Errorf("Expected error to be nil, but got an error: '%v'", err)
+			}
+			if test.expectedError != nil && err != nil && test.expectedError.Error() != err.Error() {
+				t.Errorf("Expected '%v' but got '%v'", test.expectedError, err)
+			}
+		})
+	}
+}
+
 func ExampleInterpreter_Evaluate_unary_nil() {
 	i := NewInterpreter()
 	expr := expression.NewUnary(
