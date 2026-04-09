@@ -2,9 +2,13 @@ package interpreter
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/ByteHunter/glox/expression"
+	"github.com/ByteHunter/glox/parser"
+	"github.com/ByteHunter/glox/scanner"
 	"github.com/ByteHunter/glox/token"
+	"github.com/ByteHunter/glox/utils"
 )
 
 // Evaluating Unary expressions
@@ -293,6 +297,21 @@ func ExampleInterpreter_Evaluate_binary_star_error_right() {
 	// Output:
 	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
+}
+
+func TestInterpreter_Plus_Numbers(t *testing.T) {
+	scan := scanner.NewScanner("42 + 42")
+	tokens, _ := scan.ScanTokens()
+	parser := parser.NewParser(tokens)
+	interpreter := NewInterpreter()
+
+	actual := utils.CaptureStdout(t, func() {
+		interpreter.Interpret(parser.Parse())
+	})
+	expected := ""
+	if actual != expected {
+		t.Errorf("Expected '%v' but got '%v'", expected, actual)
+	}
 }
 
 func ExampleInterpreter_Evaluate_binary_plus_numbers() {
