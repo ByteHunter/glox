@@ -53,28 +53,28 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) any {
 
 	switch expr.Operator.Type {
 	case token.GREATER:
-		l, r, err := i.parseTwoOperands(left, right)
+		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
 		}
 		return l > r
 	case token.GREATER_EQUAL:
-		l, r, err := i.parseTwoOperands(left, right)
+		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
 		}
 		return l >= r
 	case token.LESS:
-		l, r, err := i.parseTwoOperands(left, right)
+		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
 		}
 		return l < r
 	case token.LESS_EQUAL:
-		l, r, err := i.parseTwoOperands(left, right)
+		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
@@ -85,21 +85,21 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) any {
 	case token.EQUAL_EQUAL:
 		return i.isEqual(left, right)
 	case token.MINUS:
-		l, r, err := i.parseTwoOperands(left, right)
+		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
 		}
 		return l - r
 	case token.SLASH:
-		l, r, err := i.parseTwoOperands(left, right)
+		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
 		}
 		return l / r
 	case token.STAR:
-		l, r, err := i.parseTwoOperands(left, right)
+		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
 			reporting.LoxError(expr.Operator.Line, err.Error())
 			return nil
@@ -108,13 +108,18 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) any {
 	case token.PLUS:
 		left_type := reflect.TypeOf(left).String()
 		right_type := reflect.TypeOf(right).String()
-		if left_type == "int" && right_type == "int" {
-			return float64(left.(int)) + float64(right.(int))
-		}
+
 		if left_type == "string" && right_type == "string" {
 			l := left.(string)
 			r := right.(string)
 			return l + r
+		}
+
+		if left_type == "float64" && right_type == "float64" {
+			return left.(float64) + right.(float64)
+		}
+		if left_type == "int" && right_type == "int" {
+			return float64(left.(int)) + float64(right.(int))
 		}
 
 		reporting.LoxError(expr.Operator.Line, "Incompatible types in PLUS operation (InterpreterError)")
@@ -169,12 +174,14 @@ func (i *Interpreter) getFloat(v any) (float64, error) {
 	switch t := v.(type) {
 	case int:
 		return float64(t), nil
+	case float64:
+		return float64(t), nil
 	default:
 		return math.NaN(), errors.New("Cannot convert to float64, unexpected type (ConversionError)")
 	}
 }
 
-func (i *Interpreter) parseTwoOperands(left, right any) (float64, float64, error) {
+func (i *Interpreter) parseTwoNumbers(left, right any) (float64, float64, error) {
 	l, le := i.getFloat(left)
 	r, re := i.getFloat(right)
 
@@ -210,7 +217,7 @@ func (i *Interpreter) isEqual(a, b any) bool {
 	}
 
 	switch atype {
-	case "int", "string":
+	case "int", "float64", "string":
 		return a == b
 	}
 

@@ -308,7 +308,7 @@ func TestInterpreter_Plus_Numbers(t *testing.T) {
 	actual := utils.CaptureStdout(t, func() {
 		interpreter.Interpret(parser.Parse())
 	})
-	expected := ""
+	expected := "84\n"
 	if actual != expected {
 		t.Errorf("Expected '%v' but got '%v'", expected, actual)
 	}
