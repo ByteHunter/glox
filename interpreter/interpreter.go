@@ -37,13 +37,13 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 	if expr.Left == nil {
 		return nil, NewRuntimeError(
 			expr.Operator,
-			"Left operand expected to be an expression, nil found (InterpreterError)",
+			"Left operand expected to be an expression, nil found",
 		)
 	}
 	if expr.Right == nil {
 		return nil, NewRuntimeError(
 			expr.Operator,
-			"Right operand expected to be an expression, nil found (InterpreterError)",
+			"Right operand expected to be an expression, nil found",
 		)
 	}
 	left, err := i.Evaluate(expr.Left)
@@ -119,10 +119,10 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 			return float64(left.(int)) + float64(right.(int)), nil
 		}
 
-		return nil, NewRuntimeError(expr.Operator, "Incompatible types in PLUS operation (InterpreterError)")
+		return nil, NewRuntimeError(expr.Operator, "Incompatible types in PLUS operation")
 	}
 
-	return nil, NewRuntimeError(expr.Operator, "Unknown binary operator (InterpreterError)")
+	return nil, NewRuntimeError(expr.Operator, "Unknown binary operator")
 }
 
 func (i *Interpreter) VisitGroupingExpression(expr *expression.Grouping) (any, error) {
@@ -135,7 +135,7 @@ func (i *Interpreter) VisitLiteralExpression(expr *expression.Literal) (any, err
 
 func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) {
 	if expr.Right == nil {
-		return nil, NewRuntimeError(expr.Operator, "Expected an expression, nil found (InterpreterError)")
+		return nil, NewRuntimeError(expr.Operator, "Expected an expression, nil found")
 	}
 	right, err := i.Evaluate(expr.Right)
 	if err != nil {
@@ -153,7 +153,7 @@ func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) 
 		return -res, nil
 	}
 
-	return nil, NewRuntimeError(expr.Operator, "Unknown unary operator (InterpreterError)")
+	return nil, NewRuntimeError(expr.Operator, "Unknown unary operator")
 }
 
 func (i *Interpreter) Evaluate(expr expression.Expression) (any, error) {

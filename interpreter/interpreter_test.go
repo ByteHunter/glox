@@ -19,11 +19,12 @@ func ExampleInterpreter_Evaluate_unary_nil() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		nil,
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Expected an expression, nil found (InterpreterError)
+	// RuntimeError Expected an expression, nil found
 	// <nil>
 }
 
@@ -33,11 +34,12 @@ func ExampleInterpreter_Evaluate_unary_unkown_token() {
 		*token.NewToken(token.PLUS, "+", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Unknown unary operator (InterpreterError)
+	// RuntimeError Unknown unary operator
 	// <nil>
 }
 
@@ -47,11 +49,12 @@ func ExampleInterpreter_Evaluate_unary_minus_nan() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		expression.NewLiteral(true),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// NaN
 }
 
@@ -61,10 +64,12 @@ func ExampleInterpreter_Evaluate_unary_minus() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// -42
 }
 
@@ -74,10 +79,12 @@ func ExampleInterpreter_Evaluate_unary_minus2() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		expression.NewLiteral(-42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// 42
 }
 
@@ -87,10 +94,12 @@ func ExampleInterpreter_Evaluate_unary_bang_true() {
 		*token.NewToken(token.BANG, "!", nil, 1),
 		expression.NewLiteral(true),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// false
 }
 
@@ -100,10 +109,12 @@ func ExampleInterpreter_Evaluate_unary_bang_false() {
 		*token.NewToken(token.BANG, "!", nil, 1),
 		expression.NewLiteral(false),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// true
 }
 
@@ -113,10 +124,12 @@ func ExampleInterpreter_Evaluate_unary_bang_other() {
 		*token.NewToken(token.BANG, "!", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// false
 }
 
@@ -129,11 +142,12 @@ func ExampleInterpreter_Evaluate_binary_invalid_operator() {
 		*token.NewToken(token.DOT, "-", nil, 1),
 		expression.NewLiteral(1),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Unknown binary operator (InterpreterError)
+	// RuntimeError Unknown binary operator
 	// <nil>
 }
 
@@ -144,11 +158,12 @@ func ExampleInterpreter_Evaluate_binary_missing_left_operand() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		expression.NewLiteral(1),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Left operand expected to be an expression, nil found (InterpreterError)
+	// RuntimeError Left operand expected to be an expression, nil found
 	// <nil>
 }
 
@@ -159,11 +174,12 @@ func ExampleInterpreter_Evaluate_binary_missing_right_operand() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		nil,
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Right operand expected to be an expression, nil found (InterpreterError)
+	// RuntimeError Right operand expected to be an expression, nil found
 	// <nil>
 }
 
@@ -174,10 +190,12 @@ func ExampleInterpreter_Evaluate_binary_minus() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		expression.NewLiteral(1),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// 42
 }
 
@@ -188,11 +206,12 @@ func ExampleInterpreter_Evaluate_binary_minus_error_left() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		expression.NewLiteral(nil),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -203,11 +222,12 @@ func ExampleInterpreter_Evaluate_binary_minus_error_right() {
 		*token.NewToken(token.MINUS, "-", nil, 1),
 		expression.NewLiteral(1),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -218,10 +238,12 @@ func ExampleInterpreter_Evaluate_binary_slash() {
 		*token.NewToken(token.SLASH, "/", nil, 1),
 		expression.NewLiteral(2),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// 21
 }
 
@@ -232,11 +254,12 @@ func ExampleInterpreter_Evaluate_binary_slash_error_left() {
 		*token.NewToken(token.SLASH, "/", nil, 1),
 		expression.NewLiteral(2),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -247,11 +270,12 @@ func ExampleInterpreter_Evaluate_binary_slash_error_right() {
 		*token.NewToken(token.SLASH, "/", nil, 1),
 		expression.NewLiteral(nil),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -262,10 +286,12 @@ func ExampleInterpreter_Evaluate_binary_star() {
 		*token.NewToken(token.STAR, "*", nil, 1),
 		expression.NewLiteral(2),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// 42
 }
 
@@ -276,11 +302,12 @@ func ExampleInterpreter_Evaluate_binary_star_error_left() {
 		*token.NewToken(token.STAR, "*", nil, 1),
 		expression.NewLiteral(2),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -291,11 +318,12 @@ func ExampleInterpreter_Evaluate_binary_star_error_right() {
 		*token.NewToken(token.STAR, "*", nil, 1),
 		expression.NewLiteral(nil),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -321,10 +349,12 @@ func ExampleInterpreter_Evaluate_binary_plus_numbers() {
 		*token.NewToken(token.PLUS, "+", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// 84
 }
 
@@ -335,10 +365,12 @@ func ExampleInterpreter_Evaluate_binary_plus_string() {
 		*token.NewToken(token.PLUS, "+", nil, 1),
 		expression.NewLiteral("world"),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// hello world
 }
 
@@ -349,11 +381,12 @@ func ExampleInterpreter_Evaluate_binary_plus_incompatible_types() {
 		*token.NewToken(token.PLUS, "+", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Incompatible types in PLUS operation (InterpreterError)
+	// RuntimeError Incompatible types in PLUS operation
 	// <nil>
 }
 
@@ -364,10 +397,12 @@ func ExampleInterpreter_Evaluate_binary_greater() {
 		*token.NewToken(token.GREATER, ">", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// true
 }
 
@@ -378,11 +413,12 @@ func ExampleInterpreter_Evaluate_binary_greater_error() {
 		*token.NewToken(token.GREATER, ">", nil, 1),
 		expression.NewLiteral(nil),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -393,10 +429,12 @@ func ExampleInterpreter_Evaluate_binary_greater_equal() {
 		*token.NewToken(token.GREATER_EQUAL, ">=", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// true
 }
 
@@ -407,11 +445,12 @@ func ExampleInterpreter_Evaluate_binary_greater_equal_error() {
 		*token.NewToken(token.GREATER_EQUAL, ">=", nil, 1),
 		expression.NewLiteral(nil),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -422,10 +461,12 @@ func ExampleInterpreter_Evaluate_binary_less() {
 		*token.NewToken(token.LESS, "<", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// true
 }
 
@@ -436,11 +477,12 @@ func ExampleInterpreter_Evaluate_binary_less_error() {
 		*token.NewToken(token.LESS, "<", nil, 1),
 		expression.NewLiteral(nil),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
-	// [line 1] Error : Cannot convert to float64, unexpected type (ConversionError)
+	// RuntimeError Cannot convert to float64, unexpected type (ConversionError)
 	// <nil>
 }
 
@@ -451,10 +493,12 @@ func ExampleInterpreter_Evaluate_binary_less_equal() {
 		*token.NewToken(token.LESS_EQUAL, "<=", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// true
 }
 
@@ -481,10 +525,12 @@ func ExampleInterpreter_Evaluate_binary_bang_equal() {
 		*token.NewToken(token.BANQ_EQUAL, "!=", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// true
 }
 
@@ -495,10 +541,12 @@ func ExampleInterpreter_Evaluate_binary_equal_equal() {
 		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// true
 }
 
@@ -509,10 +557,12 @@ func ExampleInterpreter_Evaluate_binary_equal_both_nil() {
 		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
 		expression.NewLiteral(nil),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// true
 }
 
@@ -523,10 +573,12 @@ func ExampleInterpreter_Evaluate_binary_equal_one_nil() {
 		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
 		expression.NewLiteral(42),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// false
 }
 
@@ -537,10 +589,12 @@ func ExampleInterpreter_Evaluate_binary_equal_not_same_types() {
 		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
 		expression.NewLiteral(true),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// false
 }
 
@@ -551,9 +605,11 @@ func ExampleInterpreter_Evaluate_binary_equal_false() {
 		*token.NewToken(token.EQUAL_EQUAL, "==", nil, 1),
 		expression.NewLiteral(false),
 	)
-	result, _ := i.Evaluate(expr)
+	result, err := i.Evaluate(expr)
+	fmt.Println(err)
 	fmt.Println(result)
 
 	// Output:
+	// <nil>
 	// false
 }
