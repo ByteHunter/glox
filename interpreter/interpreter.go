@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"reflect"
 
@@ -9,6 +10,22 @@ import (
 	"github.com/ByteHunter/glox/reporting"
 	"github.com/ByteHunter/glox/token"
 )
+
+type RuntimeError struct {
+	operator token.Token
+	message  string
+}
+
+func NewRuntimeError(operator token.Token, message string) *RuntimeError {
+	return &RuntimeError{
+		operator: operator,
+		message:  message,
+	}
+}
+
+func (r RuntimeError) Error() string {
+	return fmt.Sprintf("RuntimeError %s", r.message)
+}
 
 type Interpreter struct{}
 
@@ -189,7 +206,7 @@ func (i *Interpreter) isEqual(a, b any) bool {
 
 	switch atype {
 	case "int", "string":
-		return a == b;
+		return a == b
 	}
 
 	return false
