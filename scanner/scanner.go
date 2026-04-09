@@ -42,6 +42,10 @@ func NewScanner(source string) *Scanner {
 	}
 }
 
+func (s *Scanner) GetTokens() []token.Token {
+	return s.tokens
+}
+
 func (s *Scanner) ScanTokens() ([]token.Token, error) {
 	for !s.isAtEnd() {
 		s.start = s.current
