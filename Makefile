@@ -1,6 +1,6 @@
 BINAY_NAME=glox
 TESTS_DIR=./tests
-TEST_SET=. ./utils ./reporting ./token ./scanner ./expression ./astprinter ./interpreter ./cmd/ast
+TEST_SET=. ./utils ./reporting ./token ./scanner ./expression ./astprinter ./parser ./interpreter ./cmd/ast
 
 build:
 	go build -o glox .
