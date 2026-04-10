@@ -215,7 +215,7 @@ func (i *Interpreter) isEqual(a, b any) bool {
 	}
 
 	switch atype {
-	case "int", "float64", "string":
+	case "int", "float64", "string", "bool":
 		return a == b
 	}
 
