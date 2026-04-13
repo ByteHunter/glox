@@ -1,6 +1,6 @@
 BINAY_NAME=glox
 TESTS_DIR=./tests
-TEST_SET=. ./utils ./reporting ./token ./scanner ./expression ./astprinter ./parser ./interpreter ./cmd/ast
+TEST_SET=. ./utils ./reporting ./token ./scanner ./syntax ./astprinter ./parser ./interpreter ./cmd/ast
 
 build:
 	go build -o glox .
@@ -12,7 +12,7 @@ repl:
 	@./${BINAY_NAME}
 
 ast:
-	go run ./cmd/ast/main.go expression
+	go run ./cmd/ast/main.go syntax
 
 test:
 	go test ${TEST_SET}

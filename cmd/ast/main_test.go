@@ -66,7 +66,7 @@ func ExampleBuildContent() {
 	content, _ := BuildContent("TestClass", EmptySubClassList)
 	fmt.Print(content)
 	// Output:
-	// package testclass
+	// package syntax_testclass
 	//
 	// import (
 	// "github.com/ByteHunter/glox/token"

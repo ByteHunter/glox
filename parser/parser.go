@@ -3,8 +3,8 @@ package parser
 import (
 	"fmt"
 
-	"github.com/ByteHunter/glox/expression"
 	"github.com/ByteHunter/glox/reporting"
+	syntax_expression "github.com/ByteHunter/glox/syntax"
 	"github.com/ByteHunter/glox/token"
 )
 
@@ -35,7 +35,7 @@ func NewParser(tokens []token.Token) *Parser {
 	}
 }
 
-func (p *Parser) Parse() expression.Expression {
+func (p *Parser) Parse() syntax_expression.Expression {
 	if len(p.tokens) == 0 {
 		return nil
 	}
@@ -48,11 +48,11 @@ func (p *Parser) Parse() expression.Expression {
 	return expr
 }
 
-func (p *Parser) Expression() (expression.Expression, error) {
+func (p *Parser) Expression() (syntax_expression.Expression, error) {
 	return p.Equality()
 }
 
-func (p *Parser) Equality() (expression.Expression, error) {
+func (p *Parser) Equality() (syntax_expression.Expression, error) {
 	expr, err := p.Comparison()
 	if err != nil {
 		return expr, err
@@ -61,7 +61,7 @@ func (p *Parser) Equality() (expression.Expression, error) {
 	for p.match(token.BANG_EQUAL, token.EQUAL_EQUAL) {
 		var operator token.Token = p.previous()
 		right, err := p.Comparison()
-		expr = expression.NewBinary(expr, operator, right)
+		expr = syntax_expression.NewBinary(expr, operator, right)
 		if err != nil {
 			return expr, err
 		}
@@ -70,7 +70,7 @@ func (p *Parser) Equality() (expression.Expression, error) {
 	return expr, nil
 }
 
-func (p *Parser) Comparison() (expression.Expression, error) {
+func (p *Parser) Comparison() (syntax_expression.Expression, error) {
 	expr, err := p.Term()
 	if err != nil {
 		return expr, err
@@ -79,7 +79,7 @@ func (p *Parser) Comparison() (expression.Expression, error) {
 	for p.match(token.GREATER, token.GREATER_EQUAL, token.LESS, token.LESS_EQUAL) {
 		var operator token.Token = p.previous()
 		right, err := p.Term()
-		expr = expression.NewBinary(expr, operator, right)
+		expr = syntax_expression.NewBinary(expr, operator, right)
 		if err != nil {
 			return expr, err
 		}
@@ -88,7 +88,7 @@ func (p *Parser) Comparison() (expression.Expression, error) {
 	return expr, nil
 }
 
-func (p *Parser) Term() (expression.Expression, error) {
+func (p *Parser) Term() (syntax_expression.Expression, error) {
 	expr, err := p.Factor()
 	if err != nil {
 		return expr, err
@@ -97,7 +97,7 @@ func (p *Parser) Term() (expression.Expression, error) {
 	for p.match(token.MINUS, token.PLUS) {
 		var operator token.Token = p.previous()
 		right, err := p.Factor()
-		expr = expression.NewBinary(expr, operator, right)
+		expr = syntax_expression.NewBinary(expr, operator, right)
 		if err != nil {
 			return expr, err
 		}
@@ -106,7 +106,7 @@ func (p *Parser) Term() (expression.Expression, error) {
 	return expr, nil
 }
 
-func (p *Parser) Factor() (expression.Expression, error) {
+func (p *Parser) Factor() (syntax_expression.Expression, error) {
 	expr, err := p.Unary()
 	if err != nil {
 		return expr, err
@@ -115,7 +115,7 @@ func (p *Parser) Factor() (expression.Expression, error) {
 	for p.match(token.SLASH, token.STAR) {
 		var operator token.Token = p.previous()
 		right, err := p.Unary()
-		expr = expression.NewBinary(expr, operator, right)
+		expr = syntax_expression.NewBinary(expr, operator, right)
 		if err != nil {
 			return expr, err
 		}
@@ -124,38 +124,38 @@ func (p *Parser) Factor() (expression.Expression, error) {
 	return expr, nil
 }
 
-func (p *Parser) Unary() (expression.Expression, error) {
+func (p *Parser) Unary() (syntax_expression.Expression, error) {
 	if p.match(token.BANG, token.MINUS) {
 		var operator token.Token = p.previous()
 		right, err := p.Unary()
-		return expression.NewUnary(operator, right), err
+		return syntax_expression.NewUnary(operator, right), err
 	}
 
 	return p.Primary()
 }
 
-func (p *Parser) Primary() (expression.Expression, error) {
+func (p *Parser) Primary() (syntax_expression.Expression, error) {
 	if p.match(token.FALSE) {
-		return expression.NewLiteral(false), nil
+		return syntax_expression.NewLiteral(false), nil
 	}
 	if p.match(token.TRUE) {
-		return expression.NewLiteral(true), nil
+		return syntax_expression.NewLiteral(true), nil
 	}
 	if p.match(token.NIL) {
-		return expression.NewLiteral(nil), nil
+		return syntax_expression.NewLiteral(nil), nil
 	}
 
 	if p.match(token.NUMBER, token.STRING) {
-		return expression.NewLiteral(p.previous().Literal), nil
+		return syntax_expression.NewLiteral(p.previous().Literal), nil
 	}
 
 	if p.match(token.LEFT_PAREN) {
 		expr, _ := p.Expression()
 		_, err := p.consume(token.RIGHT_PAREN, "Expect ')' after expression.")
 		if err != nil {
-			return expression.NewGrouping(expr), err
+			return syntax_expression.NewGrouping(expr), err
 		}
-		return expression.NewGrouping(expr), nil
+		return syntax_expression.NewGrouping(expr), nil
 	}
 
 	reporting.LoxTokenError(p.peek(), "Expected expression")

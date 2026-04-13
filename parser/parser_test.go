@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/ByteHunter/glox/astprinter"
-	"github.com/ByteHunter/glox/expression"
+	syntax_expression "github.com/ByteHunter/glox/syntax"
 	"github.com/ByteHunter/glox/token"
 )
 
-func printExpression(expr expression.Expression, _ error) {
+func printExpression(expr syntax_expression.Expression, _ error) {
 	result, _ := astprinter.NewAstPrinter().Print(expr)
 	fmt.Printf("%s", result)
 }
@@ -194,7 +194,7 @@ func ExampleParser_Comparison() {
 		}},
 	}
 
-	for _,e := range examples {
+	for _, e := range examples {
 		p := NewParser(e.tokens)
 		printExpression(p.Comparison())
 		fmt.Println()

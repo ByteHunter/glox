@@ -6,7 +6,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/ByteHunter/glox/expression"
+	syntax_expression "github.com/ByteHunter/glox/syntax"
 	"github.com/ByteHunter/glox/token"
 	"github.com/ByteHunter/glox/utils"
 )
@@ -161,35 +161,35 @@ func TestInterpreter_isEqual(t *testing.T) {
 
 func TestInterpreter_VisitLiteral(t *testing.T) {
 	var tests = []struct {
-		expr     *expression.Literal
+		expr     *syntax_expression.Literal
 		expected any
 	}{
 		{
-			expression.NewLiteral(42),
+			syntax_expression.NewLiteral(42),
 			42,
 		},
 		{
-			expression.NewLiteral(42.1),
+			syntax_expression.NewLiteral(42.1),
 			42.1,
 		},
 		{
-			expression.NewLiteral(int(42)),
+			syntax_expression.NewLiteral(int(42)),
 			int(42),
 		},
 		{
-			expression.NewLiteral(float64(42)),
+			syntax_expression.NewLiteral(float64(42)),
 			float64(42),
 		},
 		{
-			expression.NewLiteral(true),
+			syntax_expression.NewLiteral(true),
 			true,
 		},
 		{
-			expression.NewLiteral("hello"),
+			syntax_expression.NewLiteral("hello"),
 			"hello",
 		},
 		{
-			expression.NewLiteral(nil),
+			syntax_expression.NewLiteral(nil),
 			nil,
 		},
 	}
@@ -212,70 +212,70 @@ func TestInterpreter_VisitUnary(t *testing.T) {
 	plusToken := token.NewToken(token.PLUS, "+", nil, 1)
 	bangToken := token.NewToken(token.BANG, "!", nil, 1)
 	var tests = []struct {
-		expr           *expression.Unary
+		expr           *syntax_expression.Unary
 		expectedResult any
 		expectedNaN    bool
 		expectedError  error
 	}{
 		{
-			expression.NewUnary(*minusToken, expression.NewLiteral(42)),
+			syntax_expression.NewUnary(*minusToken, syntax_expression.NewLiteral(42)),
 			float64(-42),
 			false,
 			nil,
 		},
 		{
-			expression.NewUnary(*minusToken, expression.NewLiteral(-42)),
+			syntax_expression.NewUnary(*minusToken, syntax_expression.NewLiteral(-42)),
 			float64(42),
 			false,
 			nil,
 		},
 		{
-			expression.NewUnary(*minusToken, expression.NewLiteral(int(42))),
+			syntax_expression.NewUnary(*minusToken, syntax_expression.NewLiteral(int(42))),
 			float64(-42),
 			false,
 			nil,
 		},
 		{
-			expression.NewUnary(*minusToken, expression.NewLiteral(float64(42))),
+			syntax_expression.NewUnary(*minusToken, syntax_expression.NewLiteral(float64(42))),
 			float64(-42),
 			false,
 			nil,
 		},
 		{
-			expression.NewUnary(*minusToken, nil),
+			syntax_expression.NewUnary(*minusToken, nil),
 			nil,
 			false,
 			NewRuntimeError(*minusToken, "Expected an expression, nil found"),
 		},
 		{
-			expression.NewUnary(
+			syntax_expression.NewUnary(
 				*minusToken,
-				expression.NewUnary(*minusToken, expression.NewLiteral("42")),
+				syntax_expression.NewUnary(*minusToken, syntax_expression.NewLiteral("42")),
 			),
 			nil,
 			false,
 			NewRuntimeError(*minusToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		{
-			expression.NewUnary(*minusToken, expression.NewLiteral("42")),
+			syntax_expression.NewUnary(*minusToken, syntax_expression.NewLiteral("42")),
 			math.NaN(),
 			true,
 			NewRuntimeError(*minusToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		{
-			expression.NewUnary(*plusToken, expression.NewLiteral(42)),
+			syntax_expression.NewUnary(*plusToken, syntax_expression.NewLiteral(42)),
 			nil,
 			false,
 			NewRuntimeError(*minusToken, "Unknown unary operator"),
 		},
 		{
-			expression.NewUnary(*bangToken, expression.NewLiteral(true)),
+			syntax_expression.NewUnary(*bangToken, syntax_expression.NewLiteral(true)),
 			false,
 			false,
 			nil,
 		},
 		{
-			expression.NewUnary(*bangToken, expression.NewLiteral(false)),
+			syntax_expression.NewUnary(*bangToken, syntax_expression.NewLiteral(false)),
 			true,
 			false,
 			nil,
@@ -309,8 +309,8 @@ func TestInterpreter_VisitUnary(t *testing.T) {
 
 func TestInterpreter_VisitGrouping(t *testing.T) {
 	actual, err := NewInterpreter().VisitGroupingExpression(
-		expression.NewGrouping(
-			expression.NewLiteral(42),
+		syntax_expression.NewGrouping(
+			syntax_expression.NewLiteral(42),
 		),
 	)
 	expected := 42
@@ -333,31 +333,31 @@ func TestInterpreter_VisitBinary(t *testing.T) {
 	slashToken := token.NewToken(token.SLASH, "/", nil, 1)
 	starToken := token.NewToken(token.STAR, "*", nil, 1)
 	plusToken := token.NewToken(token.PLUS, "-", nil, 1)
-	literal2 := expression.NewLiteral(2)
-	literal42 := expression.NewLiteral(42)
-	literal84 := expression.NewLiteral(84)
+	literal2 := syntax_expression.NewLiteral(2)
+	literal42 := syntax_expression.NewLiteral(42)
+	literal84 := syntax_expression.NewLiteral(84)
 	var tests = []struct {
-		expr           *expression.Binary
+		expr           *syntax_expression.Binary
 		expectedResult any
 		expectedNaN    bool
 		expectedError  error
 	}{
 		// Early returns
 		{
-			expression.NewBinary(nil, *greaterToken, literal42),
+			syntax_expression.NewBinary(nil, *greaterToken, literal42),
 			nil,
 			false,
 			NewRuntimeError(*greaterToken, "Left operand expected to be an expression, nil found"),
 		},
 		{
-			expression.NewBinary(literal42, *greaterToken, nil),
+			syntax_expression.NewBinary(literal42, *greaterToken, nil),
 			nil,
 			false,
 			NewRuntimeError(*greaterToken, "Right operand expected to be an expression, nil found"),
 		},
 		{
-			expression.NewBinary(
-				expression.NewUnary(*minusToken, expression.NewLiteral("42")),
+			syntax_expression.NewBinary(
+				syntax_expression.NewUnary(*minusToken, syntax_expression.NewLiteral("42")),
 				*minusToken,
 				literal42,
 			),
@@ -366,10 +366,10 @@ func TestInterpreter_VisitBinary(t *testing.T) {
 			NewRuntimeError(*greaterToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		{
-			expression.NewBinary(
+			syntax_expression.NewBinary(
 				literal42,
 				*minusToken,
-				expression.NewUnary(*minusToken, expression.NewLiteral("42")),
+				syntax_expression.NewUnary(*minusToken, syntax_expression.NewLiteral("42")),
 			),
 			nil,
 			false,
@@ -377,154 +377,154 @@ func TestInterpreter_VisitBinary(t *testing.T) {
 		},
 		// Unknown operator
 		{
-			expression.NewBinary(literal42, *token.NewToken(token.BANG, "!", nil, 1), literal42),
+			syntax_expression.NewBinary(literal42, *token.NewToken(token.BANG, "!", nil, 1), literal42),
 			nil,
 			false,
 			NewRuntimeError(*greaterToken, "Unknown binary operator"),
 		},
 		// Greater
 		{
-			expression.NewBinary(literal42, *greaterToken, literal42),
+			syntax_expression.NewBinary(literal42, *greaterToken, literal42),
 			false, false, nil,
 		},
 		{
-			expression.NewBinary(literal84, *greaterToken, literal42),
+			syntax_expression.NewBinary(literal84, *greaterToken, literal42),
 			true, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *greaterToken, literal84),
+			syntax_expression.NewBinary(literal42, *greaterToken, literal84),
 			false, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *greaterToken, expression.NewLiteral("42")),
+			syntax_expression.NewBinary(literal42, *greaterToken, syntax_expression.NewLiteral("42")),
 			nil, false,
 			NewRuntimeError(*greaterToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		// Greater Equal
 		{
-			expression.NewBinary(literal42, *greaterEqualToken, literal42),
+			syntax_expression.NewBinary(literal42, *greaterEqualToken, literal42),
 			true, false, nil,
 		},
 		{
-			expression.NewBinary(literal84, *greaterEqualToken, literal42),
+			syntax_expression.NewBinary(literal84, *greaterEqualToken, literal42),
 			true, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *greaterEqualToken, literal84),
+			syntax_expression.NewBinary(literal42, *greaterEqualToken, literal84),
 			false, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *greaterEqualToken, expression.NewLiteral("42")),
+			syntax_expression.NewBinary(literal42, *greaterEqualToken, syntax_expression.NewLiteral("42")),
 			nil, false,
 			NewRuntimeError(*greaterEqualToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		// Less
 		{
-			expression.NewBinary(literal42, *lessToken, literal42),
+			syntax_expression.NewBinary(literal42, *lessToken, literal42),
 			false, false, nil,
 		},
 		{
-			expression.NewBinary(literal84, *lessToken, literal42),
+			syntax_expression.NewBinary(literal84, *lessToken, literal42),
 			false, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *lessToken, literal84),
+			syntax_expression.NewBinary(literal42, *lessToken, literal84),
 			true, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *lessToken, expression.NewLiteral("42")),
+			syntax_expression.NewBinary(literal42, *lessToken, syntax_expression.NewLiteral("42")),
 			nil, false,
 			NewRuntimeError(*lessToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		// Less Equal
 		{
-			expression.NewBinary(literal42, *lessEqualToken, literal42),
+			syntax_expression.NewBinary(literal42, *lessEqualToken, literal42),
 			true, false, nil,
 		},
 		{
-			expression.NewBinary(literal84, *lessEqualToken, literal42),
+			syntax_expression.NewBinary(literal84, *lessEqualToken, literal42),
 			false, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *lessEqualToken, literal84),
+			syntax_expression.NewBinary(literal42, *lessEqualToken, literal84),
 			true, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *lessEqualToken, expression.NewLiteral("42")),
+			syntax_expression.NewBinary(literal42, *lessEqualToken, syntax_expression.NewLiteral("42")),
 			nil, false,
 			NewRuntimeError(*lessEqualToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		// Bang Equal
 		{
-			expression.NewBinary(literal42, *bangEqualToken, literal42),
+			syntax_expression.NewBinary(literal42, *bangEqualToken, literal42),
 			false, false, nil,
 		},
 		{
-			expression.NewBinary(literal84, *bangEqualToken, literal42),
+			syntax_expression.NewBinary(literal84, *bangEqualToken, literal42),
 			true, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *bangEqualToken, literal84),
+			syntax_expression.NewBinary(literal42, *bangEqualToken, literal84),
 			true, false, nil,
 		},
 		// Equal Equal
 		{
-			expression.NewBinary(literal42, *equalEqualToken, literal42),
+			syntax_expression.NewBinary(literal42, *equalEqualToken, literal42),
 			true, false, nil,
 		},
 		{
-			expression.NewBinary(literal84, *equalEqualToken, literal42),
+			syntax_expression.NewBinary(literal84, *equalEqualToken, literal42),
 			false, false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *equalEqualToken, literal84),
+			syntax_expression.NewBinary(literal42, *equalEqualToken, literal84),
 			false, false, nil,
 		},
 		// Minus
 		{
-			expression.NewBinary(literal84, *minusToken, literal42),
+			syntax_expression.NewBinary(literal84, *minusToken, literal42),
 			float64(42), false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *minusToken, expression.NewLiteral("42")),
+			syntax_expression.NewBinary(literal42, *minusToken, syntax_expression.NewLiteral("42")),
 			nil, false,
 			NewRuntimeError(*minusToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		// Slash
 		{
-			expression.NewBinary(literal84, *slashToken, literal2),
+			syntax_expression.NewBinary(literal84, *slashToken, literal2),
 			float64(42), false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *slashToken, expression.NewLiteral("42")),
+			syntax_expression.NewBinary(literal42, *slashToken, syntax_expression.NewLiteral("42")),
 			nil, false,
 			NewRuntimeError(*slashToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		// Star
 		{
-			expression.NewBinary(literal42, *starToken, literal2),
+			syntax_expression.NewBinary(literal42, *starToken, literal2),
 			float64(84), false, nil,
 		},
 		{
-			expression.NewBinary(literal42, *starToken, expression.NewLiteral("42")),
+			syntax_expression.NewBinary(literal42, *starToken, syntax_expression.NewLiteral("42")),
 			nil, false,
 			NewRuntimeError(*starToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		// Plus
 		{
-			expression.NewBinary(literal42, *plusToken, literal42),
+			syntax_expression.NewBinary(literal42, *plusToken, literal42),
 			float64(84), false, nil,
 		},
 		{
-			expression.NewBinary(expression.NewLiteral(float64(42)), *plusToken, expression.NewLiteral(float64(42))),
+			syntax_expression.NewBinary(syntax_expression.NewLiteral(float64(42)), *plusToken, syntax_expression.NewLiteral(float64(42))),
 			float64(84), false, nil,
 		},
 		{
-			expression.NewBinary(expression.NewLiteral("hello "), *plusToken, expression.NewLiteral("world")),
+			syntax_expression.NewBinary(syntax_expression.NewLiteral("hello "), *plusToken, syntax_expression.NewLiteral("world")),
 			"hello world", false, nil,
 		},
 		{
-			expression.NewBinary(expression.NewLiteral("hello "), *plusToken, expression.NewLiteral(float64(42))),
+			syntax_expression.NewBinary(syntax_expression.NewLiteral("hello "), *plusToken, syntax_expression.NewLiteral(float64(42))),
 			nil, false,
 			NewRuntimeError(*plusToken, "Incompatible types in PLUS operation"),
 		},
@@ -568,7 +568,7 @@ func TestInterpreter_Interpret_nil(t *testing.T) {
 
 func TestInterpreter_Interpret_valid(t *testing.T) {
 	actual := utils.CaptureStdout(t, func() {
-		NewInterpreter().Interpret(expression.NewLiteral(42))
+		NewInterpreter().Interpret(syntax_expression.NewLiteral(42))
 	})
 	expected := "42\n"
 

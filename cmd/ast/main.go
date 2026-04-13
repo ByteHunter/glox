@@ -19,7 +19,7 @@ type SubClassDefinition struct {
 }
 type SubClassList []SubClassDefinition
 
-var Classes = SubClassList{
+var ExpressionClasses = SubClassList{
 	SubClassDefinition{
 		"Binary",
 		FieldList{
@@ -49,6 +49,21 @@ var Classes = SubClassList{
 	},
 }
 
+var StatementClasses = SubClassList{
+	SubClassDefinition{
+		"Expression",
+		FieldList{
+			{"Expr", "Expression"},
+		},
+	},
+	SubClassDefinition{
+		"Print",
+		FieldList{
+			{"Expr", "Expression"},
+		},
+	},
+}
+
 func main() {
 	os.Exit(RunMain())
 }
@@ -61,14 +76,27 @@ func RunMain() int {
 		return 1
 	}
 
-	file, err := getFile(outputDirectory, "Expression")
+	res := generateAst(outputDirectory, "Expression", ExpressionClasses)
+	if res != 0 {
+		return res
+	}
+	// res = generateAst(outputDirectory, "Statement", StatementClasses)
+	// if res != 0 {
+	// 	return res
+	// }
+
+	return 0
+}
+
+func generateAst(outputDirectory, baseName string, classes SubClassList) int {
+	file, err := getFile(outputDirectory, baseName)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		return 1
 	}
 	defer file.Close()
 
-	contents, err := BuildContent("Expression", Classes)
+	contents, err := BuildContent(baseName, classes)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		return 1
@@ -108,7 +136,7 @@ func BuildContent(baseName string, classes SubClassList) (string, error) {
 	buffer.WriteString("")
 
 	// Starting the file content
-	buffer.WriteString("package " + strings.ToLower(baseName) + "\n\n")
+	buffer.WriteString("package syntax_" + strings.ToLower(baseName) + "\n\n")
 	buffer.WriteString("import (\n")
 	buffer.WriteString("\"github.com/ByteHunter/glox/token\"\n")
 	buffer.WriteString(")\n\n")
