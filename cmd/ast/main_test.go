@@ -102,7 +102,7 @@ func ExampleBuildSubClassContent() {
 	// }
 	//
 	// func (literal *Literal) Accept(v Visitor) (any, error) {
-	// return v.VisitLiteralExpression(literal)
+	// return v.VisitLiteralTestClass(literal)
 	// }
 }
 

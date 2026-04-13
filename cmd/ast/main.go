@@ -53,13 +53,13 @@ var StatementClasses = SubClassList{
 	SubClassDefinition{
 		"Expression",
 		FieldList{
-			{"Expr", "Expression"},
+			{"Expr", "syntax_expression.Expression"},
 		},
 	},
 	SubClassDefinition{
 		"Print",
 		FieldList{
-			{"Expr", "Expression"},
+			{"Expr", "syntax_expression.Expression"},
 		},
 	},
 }
@@ -119,7 +119,7 @@ func generateAst(outputDirectory, baseName string, classes SubClassList) int {
 }
 
 func getFile(outputDir, baseName string) (*os.File, error) {
-	path := fmt.Sprintf("%s/%s.go", outputDir, strings.ToLower(baseName))
+	path := fmt.Sprintf("%s/%s/%s.go", outputDir, strings.ToLower(baseName), strings.ToLower(baseName))
 
 	file, err := os.Create(path)
 
@@ -147,7 +147,7 @@ func BuildContent(baseName string, classes SubClassList) (string, error) {
 	buffer.WriteString("}\n\n")
 
 	// Visitor interface
-	visitorInterfaceContent := BuildVistitorInterface(classes)
+	visitorInterfaceContent := BuildVistitorInterface(baseName, classes)
 	buffer.WriteString(visitorInterfaceContent)
 
 	// Subclasses
@@ -159,13 +159,13 @@ func BuildContent(baseName string, classes SubClassList) (string, error) {
 	return buffer.String(), nil
 }
 
-func BuildVistitorInterface(subClasses SubClassList) string {
+func BuildVistitorInterface(baseName string, subClasses SubClassList) string {
 	var buffer strings.Builder
 	buffer.Reset()
 
 	buffer.WriteString("type Visitor interface {\n")
 	for _, subClass := range subClasses {
-		buffer.WriteString("Visit" + subClass.name + "Expression(*" + subClass.name + ") (any, error)\n")
+		buffer.WriteString("Visit" + subClass.name + baseName + "(*" + subClass.name + ") (any, error)\n")
 	}
 	buffer.WriteString("}\n\n")
 
@@ -200,7 +200,7 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 
 	// Define the accept method
 	buffer.WriteString("func (" + strings.ToLower(subClass.name) + " *" + subClass.name + ") Accept(v Visitor) (any, error) {\n")
-	buffer.WriteString("return v.Visit" + subClass.name + "Expression(" + strings.ToLower(subClass.name) + ")\n")
+	buffer.WriteString("return v.Visit" + subClass.name + baseName + "(" + strings.ToLower(subClass.name) + ")\n")
 	buffer.WriteString("}\n")
 
 	return buffer.String()
