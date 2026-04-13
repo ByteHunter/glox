@@ -20,7 +20,7 @@ const (
 
 	// Comparison tokens
 	BANG
-	BANQ_EQUAL
+	BANG_EQUAL
 	EQUAL
 	EQUAL_EQUAL
 	GREATER
@@ -97,7 +97,7 @@ var tokenTypeName = map[TokenType]string{
 
 	// Comparison tokens
 	BANG:          "BANG",
-	BANQ_EQUAL:    "BANQ_EQUAL",
+	BANG_EQUAL:    "BANG_EQUAL",
 	EQUAL:         "EQUAL",
 	EQUAL_EQUAL:   "EQUAL_EQUAL",
 	GREATER:       "GREATER",

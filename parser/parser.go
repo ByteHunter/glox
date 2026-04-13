@@ -58,7 +58,7 @@ func (p *Parser) Equality() (expression.Expression, error) {
 		return expr, err
 	}
 
-	for p.match(token.BANQ_EQUAL, token.EQUAL_EQUAL) {
+	for p.match(token.BANG_EQUAL, token.EQUAL_EQUAL) {
 		var operator token.Token = p.previous()
 		right, err := p.Comparison()
 		expr = expression.NewBinary(expr, operator, right)

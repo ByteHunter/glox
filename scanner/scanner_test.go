@@ -139,7 +139,7 @@ func TestOperatorTokens(t *testing.T) {
 		{Type: token.EQUAL, Lexeme: "=", Literal: nil, Line: 1},
 		{Type: token.LESS, Lexeme: "<", Literal: nil, Line: 1},
 		{Type: token.GREATER, Lexeme: ">", Literal: nil, Line: 1},
-		{Type: token.BANQ_EQUAL, Lexeme: "!=", Literal: nil, Line: 1},
+		{Type: token.BANG_EQUAL, Lexeme: "!=", Literal: nil, Line: 1},
 		{Type: token.EQUAL_EQUAL, Lexeme: "==", Literal: nil, Line: 1},
 		{Type: token.LESS_EQUAL, Lexeme: "<=", Literal: nil, Line: 1},
 		{Type: token.GREATER_EQUAL, Lexeme: ">=", Literal: nil, Line: 1},
