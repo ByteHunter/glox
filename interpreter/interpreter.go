@@ -80,7 +80,7 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 			return nil, NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l <= r, nil
-	case token.BANQ_EQUAL:
+	case token.BANG_EQUAL:
 		return !i.isEqual(left, right), nil
 	case token.EQUAL_EQUAL:
 		return i.isEqual(left, right), nil

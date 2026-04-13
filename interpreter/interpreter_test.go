@@ -327,7 +327,7 @@ func TestInterpreter_VisitBinary(t *testing.T) {
 	greaterEqualToken := token.NewToken(token.GREATER_EQUAL, ">=", nil, 1)
 	lessToken := token.NewToken(token.LESS, "<", nil, 1)
 	lessEqualToken := token.NewToken(token.LESS_EQUAL, "<=", nil, 1)
-	bangEqualToken := token.NewToken(token.BANQ_EQUAL, "!=", nil, 1)
+	bangEqualToken := token.NewToken(token.BANG_EQUAL, "!=", nil, 1)
 	equalEqualToken := token.NewToken(token.EQUAL_EQUAL, "==", nil, 1)
 	minusToken := token.NewToken(token.MINUS, "-", nil, 1)
 	slashToken := token.NewToken(token.SLASH, "/", nil, 1)

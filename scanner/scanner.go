@@ -82,7 +82,7 @@ func (s *Scanner) scanToken() {
 		s.addSimpleToken(token.STAR)
 	case '!':
 		if s.match('=') {
-			s.addSimpleToken(token.BANQ_EQUAL)
+			s.addSimpleToken(token.BANG_EQUAL)
 		} else {
 			s.addSimpleToken(token.BANG)
 		}
