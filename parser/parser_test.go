@@ -39,7 +39,7 @@ func ExampleParser_Parse_empty_tokens_slice() {
 
 	fmt.Println(parser.Parse())
 	// Output:
-	// <nil>
+	// []
 }
 
 func ExampleParser_Parse_only_eof() {
@@ -49,8 +49,7 @@ func ExampleParser_Parse_only_eof() {
 
 	fmt.Println(parser.Parse())
 	// Output:
-	// [line 1] Error at end: Expected expression
-	// <nil>
+	// []
 }
 
 func ExampleParser_Primary_false() {

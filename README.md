@@ -7,11 +7,18 @@ This implementation is written in Go.
 # Grammar
 
 ```
-expression -> equality
-equality   -> comparison ( ( "!=" | "==" ) comparison )* ;
-comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-term       -> factor ( ( "-" | "+" ) factor )* ;
-factor     -> unary ( ( "/" | "*" ) unary )* ;
-unary      -> ( "!" | "-" ) unary | primary ;
-primary    -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+progam              -> statement* EOF ;
+
+statement           -> expressionStatement | printStatement ;
+
+expressionStatement -> expression ";" ;
+printStatement      -> "print" expression ";" ;
+
+expression          -> equality
+equality            -> comparison ( ( "!=" | "==" ) comparison )* ;
+comparison          -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term                -> factor ( ( "-" | "+" ) factor )* ;
+factor              -> unary ( ( "/" | "*" ) unary )* ;
+unary               -> ( "!" | "-" ) unary | primary ;
+primary             -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
 ```

@@ -8,6 +8,7 @@ import (
 
 	"github.com/ByteHunter/glox/reporting"
 	"github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/statement"
 	"github.com/ByteHunter/glox/token"
 )
 
@@ -31,6 +32,18 @@ type Interpreter struct{}
 
 func NewInterpreter() *Interpreter {
 	return &Interpreter{}
+}
+
+func (i *Interpreter) VisitExpressionStatement(stmt *statement.ExpressionStatement) (any, error) {
+	i.Evaluate(stmt.Expr)
+	return nil, nil
+}
+
+func (i *Interpreter) VisitPrintStatement(stmt *statement.PrintStatement) (any, error) {
+	value, _ := i.Evaluate(stmt.Expr)
+	fmt.Println(value)
+
+	return nil, nil
 }
 
 func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
@@ -163,13 +176,18 @@ func (i *Interpreter) Evaluate(expr expression.Expression) (any, error) {
 	return expr.Accept(i)
 }
 
-func (i *Interpreter) Interpret(expr expression.Expression) {
-	value, err := i.Evaluate(expr)
-	if err != nil {
-		reporting.LoxError(1, err.Error())
-		return
+func (i *Interpreter) Interpret(stmts []statement.Statement) {
+	for _, stmt := range stmts {
+		_, err := i.Execute(stmt)
+		if err != nil {
+			reporting.LoxError(1, err.Error())
+			return
+		}
 	}
-	fmt.Println(value)
+}
+
+func (i *Interpreter) Execute(stmt statement.Statement) (any, error) {
+	return stmt.Accept(i)
 }
 
 func (i *Interpreter) getFloat(v any) (float64, error) {

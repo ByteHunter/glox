@@ -5,6 +5,7 @@ import (
 
 	"github.com/ByteHunter/glox/reporting"
 	"github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/statement"
 	"github.com/ByteHunter/glox/token"
 )
 
@@ -35,17 +36,40 @@ func NewParser(tokens []token.Token) *Parser {
 	}
 }
 
-func (p *Parser) Parse() expression.Expression {
+func (p *Parser) Parse() []statement.Statement {
 	if len(p.tokens) == 0 {
 		return nil
 	}
 
-	expr, err := p.Expression()
-	if err != nil {
-		return nil
+	var statements []statement.Statement;
+
+	for (!p.isAtEnd()) {
+		statements = append(statements, p.Statement())
 	}
 
-	return expr
+	return statements
+}
+
+func (p *Parser) Statement() statement.Statement {
+	if p.match(token.PRINT) {
+		return p.PrintStatement()
+	}
+
+	return p.ExpressionStatement()
+}
+
+func (p *Parser) PrintStatement() statement.Statement {
+	value, _ := p.Expression()
+	p.consume(token.SEMICOLON, "Expect ';' after value.")
+
+	return statement.NewPrint(value)
+}
+
+func (p *Parser) ExpressionStatement() statement.Statement {
+	expr, _ := p.Expression()
+	p.consume(token.SEMICOLON, "Expect ';' after expression.")
+
+	return statement.NewExpression(expr)
 }
 
 func (p *Parser) Expression() (expression.Expression, error) {

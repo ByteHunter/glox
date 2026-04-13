@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/statement"
 	"github.com/ByteHunter/glox/token"
 	"github.com/ByteHunter/glox/utils"
 )
@@ -559,7 +560,7 @@ func TestInterpreter_Interpret_nil(t *testing.T) {
 	actual := utils.CaptureStdout(t, func() {
 		NewInterpreter().Interpret(nil)
 	})
-	expected := "[line 1] Error : RuntimeError Expected an expression, nil found\n"
+	expected := ""
 
 	if expected != actual {
 		t.Errorf("Expected '%v' but got '%v'", expected, actual)
@@ -567,10 +568,13 @@ func TestInterpreter_Interpret_nil(t *testing.T) {
 }
 
 func TestInterpreter_Interpret_valid(t *testing.T) {
+	var statements []statement.Statement = []statement.Statement{
+		statement.NewPrint(expression.NewLiteral(true)),
+	}
 	actual := utils.CaptureStdout(t, func() {
-		NewInterpreter().Interpret(expression.NewLiteral(42))
+		NewInterpreter().Interpret(statements)
 	})
-	expected := "42\n"
+	expected := "true\n"
 
 	if expected != actual {
 		t.Errorf("Expected '%v' but got '%v'", expected, actual)
