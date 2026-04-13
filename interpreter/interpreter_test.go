@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ByteHunter/glox/expression"
+	"github.com/ByteHunter/glox/token"
 	"math"
 	"testing"
-	"github.com/ByteHunter/glox/token"
 )
 
 func TestInterpreter_getFloat(t *testing.T) {
@@ -246,6 +246,15 @@ func TestInterpreter_VisitUnary(t *testing.T) {
 			NewRuntimeError(*minusToken, "Expected an expression, nil found"),
 		},
 		{
+			expression.NewUnary(
+				*minusToken,
+				expression.NewUnary(*minusToken, expression.NewLiteral("42")),
+			),
+			nil,
+			false,
+			NewRuntimeError(*minusToken, "Cannot convert to float64, unexpected type (ConversionError)"),
+		},
+		{
 			expression.NewUnary(*minusToken, expression.NewLiteral("42")),
 			math.NaN(),
 			true,
@@ -343,6 +352,26 @@ func TestInterpreter_VisitBinary(t *testing.T) {
 			nil,
 			false,
 			NewRuntimeError(*greaterToken, "Right operand expected to be an expression, nil found"),
+		},
+		{
+			expression.NewBinary(
+				expression.NewUnary(*minusToken, expression.NewLiteral("42")),
+				*minusToken,
+				literal42,
+			),
+			nil,
+			false,
+			NewRuntimeError(*greaterToken, "Cannot convert to float64, unexpected type (ConversionError)"),
+		},
+		{
+			expression.NewBinary(
+				literal42,
+				*minusToken,
+				expression.NewUnary(*minusToken, expression.NewLiteral("42")),
+			),
+			nil,
+			false,
+			NewRuntimeError(*greaterToken, "Cannot convert to float64, unexpected type (ConversionError)"),
 		},
 		// Unknown operator
 		{

@@ -48,11 +48,11 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 	}
 	left, err := i.Evaluate(expr.Left)
 	if err != nil {
-		return nil, NewRuntimeError(expr.Operator, err.Error())
+		return nil, err
 	}
 	right, err := i.Evaluate(expr.Right)
 	if err != nil {
-		return nil, NewRuntimeError(expr.Operator, err.Error())
+		return nil, err
 	}
 
 	switch expr.Operator.Type {
@@ -139,7 +139,7 @@ func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) 
 	}
 	right, err := i.Evaluate(expr.Right)
 	if err != nil {
-		return nil, NewRuntimeError(expr.Operator, err.Error())
+		return nil, err
 	}
 
 	switch expr.Operator.Type {
