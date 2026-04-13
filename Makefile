@@ -1,6 +1,6 @@
 BINAY_NAME=glox
 TESTS_DIR=./tests
-TEST_SET=. ./utils ./reporting ./token ./scanner ./expression ./astprinter ./parser ./cmd/ast
+TEST_SET=. ./utils ./reporting ./token ./scanner ./expression ./astprinter ./parser ./interpreter ./cmd/ast
 
 build:
 	go build -o glox .
@@ -23,7 +23,9 @@ test-verbose:
 coverage:
 	go test -coverprofile=${TESTS_DIR}/coverage.out ${TEST_SET}
 
-serve-coverage:
+build-coverage:
 	go tool cover -html=${TESTS_DIR}/coverage.out -o=${TESTS_DIR}/coverage.html
+
+serve-coverage:
 	@echo "Check at: http://localhost:3000/coverage.html"
 	php -t ${TESTS_DIR} -S localhost:3000

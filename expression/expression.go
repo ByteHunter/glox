@@ -5,14 +5,14 @@ import (
 )
 
 type Expression interface {
-	Accept(v Visitor) any
+	Accept(v Visitor) (any, error)
 }
 
 type Visitor interface {
-	VisitBinaryExpression(*Binary) any
-	VisitGroupingExpression(*Grouping) any
-	VisitLiteralExpression(*Literal) any
-	VisitUnaryExpression(*Unary) any
+	VisitBinaryExpression(*Binary) (any, error)
+	VisitGroupingExpression(*Grouping) (any, error)
+	VisitLiteralExpression(*Literal) (any, error)
+	VisitUnaryExpression(*Unary) (any, error)
 }
 
 type Binary struct {
@@ -30,7 +30,7 @@ func NewBinary(left Expression, operator token.Token, right Expression) *Binary 
 	}
 }
 
-func (binary *Binary) Accept(v Visitor) any {
+func (binary *Binary) Accept(v Visitor) (any, error) {
 	return v.VisitBinaryExpression(binary)
 }
 
@@ -45,7 +45,7 @@ func NewGrouping(expr Expression) *Grouping {
 	}
 }
 
-func (grouping *Grouping) Accept(v Visitor) any {
+func (grouping *Grouping) Accept(v Visitor) (any, error) {
 	return v.VisitGroupingExpression(grouping)
 }
 
@@ -60,7 +60,7 @@ func NewLiteral(value any) *Literal {
 	}
 }
 
-func (literal *Literal) Accept(v Visitor) any {
+func (literal *Literal) Accept(v Visitor) (any, error) {
 	return v.VisitLiteralExpression(literal)
 }
 
@@ -77,6 +77,6 @@ func NewUnary(operator token.Token, right Expression) *Unary {
 	}
 }
 
-func (unary *Unary) Accept(v Visitor) any {
+func (unary *Unary) Accept(v Visitor) (any, error) {
 	return v.VisitUnaryExpression(unary)
 }

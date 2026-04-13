@@ -10,7 +10,8 @@ import (
 )
 
 func printExpression(expr expression.Expression, _ error) {
-	fmt.Printf("%s", astprinter.NewAstPrinter().Print(expr))
+	result, _ := astprinter.NewAstPrinter().Print(expr)
+	fmt.Printf("%s", result)
 }
 
 func ExampleNewParser_empty() {

@@ -72,7 +72,7 @@ func TestRunMainRunFile(t *testing.T) {
 		actualExit = RunMain()
 	})
 	expectedExit := 0
-	expectedStdout := ""
+	expectedStdout := "(== 42 (- (* 21 4) 42))\ntrue\n"
 
 	if actualStdout != expectedStdout {
 		t.Errorf("Expected '%v' but got '%v'", expectedStdout, actualStdout)
