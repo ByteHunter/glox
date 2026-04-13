@@ -157,13 +157,17 @@ func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) 
 }
 
 func (i *Interpreter) Evaluate(expr expression.Expression) (any, error) {
+	if expr == nil {
+		return nil, NewRuntimeError(token.Token{}, "Expected an expression, nil found")
+	}
 	return expr.Accept(i)
 }
 
 func (i *Interpreter) Interpret(expr expression.Expression) {
 	value, err := i.Evaluate(expr)
 	if err != nil {
-		reporting.LoxError(err.(RuntimeError).Operator.Line, err.Error())
+		reporting.LoxError(1, err.Error())
+		return
 	}
 	fmt.Println(value)
 }

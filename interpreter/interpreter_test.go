@@ -3,10 +3,12 @@ package interpreter
 import (
 	"errors"
 	"fmt"
-	"github.com/ByteHunter/glox/expression"
-	"github.com/ByteHunter/glox/token"
 	"math"
 	"testing"
+
+	"github.com/ByteHunter/glox/expression"
+	"github.com/ByteHunter/glox/token"
+	"github.com/ByteHunter/glox/utils"
 )
 
 func TestInterpreter_getFloat(t *testing.T) {
@@ -550,5 +552,27 @@ func TestInterpreter_VisitBinary(t *testing.T) {
 				t.Errorf("Expected '%v' but got '%v'", test.expectedError, err)
 			}
 		})
+	}
+}
+
+func TestInterpreter_Interpret_nil(t *testing.T) {
+	actual := utils.CaptureStdout(t, func() {
+		NewInterpreter().Interpret(nil)
+	})
+	expected := "[line 1] Error : RuntimeError Expected an expression, nil found\n"
+
+	if expected != actual {
+		t.Errorf("Expected '%v' but got '%v'", expected, actual)
+	}
+}
+
+func TestInterpreter_Interpret_valid(t *testing.T) {
+	actual := utils.CaptureStdout(t, func() {
+		NewInterpreter().Interpret(expression.NewLiteral(42))
+	})
+	expected := "42\n"
+
+	if expected != actual {
+		t.Errorf("Expected '%v' but got '%v'", expected, actual)
 	}
 }
