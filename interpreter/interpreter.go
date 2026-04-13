@@ -46,6 +46,10 @@ func (i *Interpreter) VisitPrintStatement(stmt *statement.PrintStatement) (any, 
 	return nil, nil
 }
 
+func (i *Interpreter) VisitVariableStatement(stmt *statement.VariableStatement) (any, error) {
+	return nil, NewRuntimeError(stmt.Name, "VariableStatement not implemented!")
+}
+
 func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
 	if expr.Left == nil {
 		return nil, NewRuntimeError(

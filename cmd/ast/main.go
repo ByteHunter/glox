@@ -53,13 +53,20 @@ var StatementClasses = SubClassList{
 	SubClassDefinition{
 		"Expression",
 		FieldList{
-			{"Expr", "syntax_expression.Expression"},
+			{"Expr", "expression.Expression"},
 		},
 	},
 	SubClassDefinition{
 		"Print",
 		FieldList{
-			{"Expr", "syntax_expression.Expression"},
+			{"Expr", "expression.Expression"},
+		},
+	},
+	SubClassDefinition{
+		"Variable",
+		FieldList{
+			{"Name", "token.Token"},
+			{"Initializer", "expression.Expression"},
 		},
 	},
 }
@@ -136,7 +143,7 @@ func BuildContent(baseName string, classes SubClassList) (string, error) {
 	buffer.WriteString("")
 
 	// Starting the file content
-	buffer.WriteString("package syntax_" + strings.ToLower(baseName) + "\n\n")
+	buffer.WriteString("package " + strings.ToLower(baseName) + "\n\n")
 	buffer.WriteString("import (\n")
 	buffer.WriteString("\"github.com/ByteHunter/glox/token\"\n")
 	buffer.WriteString(")\n\n")
@@ -165,7 +172,7 @@ func BuildVistitorInterface(baseName string, subClasses SubClassList) string {
 
 	buffer.WriteString("type Visitor interface {\n")
 	for _, subClass := range subClasses {
-		buffer.WriteString("Visit" + subClass.name + baseName + "(*" + subClass.name + ") (any, error)\n")
+		buffer.WriteString("Visit" + subClass.name + baseName + "(*" + subClass.name + baseName + ") (any, error)\n")
 	}
 	buffer.WriteString("}\n\n")
 
@@ -176,7 +183,7 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	var buffer strings.Builder
 	buffer.Reset()
 	// Define the struct
-	buffer.WriteString("type " + subClass.name + " struct {\n")
+	buffer.WriteString("type " + subClass.name + baseName + " struct {\n")
 	buffer.WriteString(baseName + "\n")
 
 	// Define the fields
@@ -190,8 +197,8 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	for _, field := range subClass.fields {
 		buffer.WriteString("" + strings.ToLower(field.key) + " " + field.value + ", ")
 	}
-	buffer.WriteString(") *" + subClass.name + " {\n")
-	buffer.WriteString("return &" + subClass.name + "{\n")
+	buffer.WriteString(") *" + subClass.name + baseName + " {\n")
+	buffer.WriteString("return &" + subClass.name + baseName + "{\n")
 	for _, field := range subClass.fields {
 		buffer.WriteString("" + field.key + ": " + strings.ToLower(field.key) + ",\n")
 	}
@@ -199,7 +206,7 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	buffer.WriteString("}\n\n")
 
 	// Define the accept method
-	buffer.WriteString("func (" + strings.ToLower(subClass.name) + " *" + subClass.name + ") Accept(v Visitor) (any, error) {\n")
+	buffer.WriteString("func (" + strings.ToLower(subClass.name) + " *" + subClass.name + baseName + ") Accept(v Visitor) (any, error) {\n")
 	buffer.WriteString("return v.Visit" + subClass.name + baseName + "(" + strings.ToLower(subClass.name) + ")\n")
 	buffer.WriteString("}\n")
 

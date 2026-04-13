@@ -7,7 +7,11 @@ This implementation is written in Go.
 # Grammar
 
 ```
-progam              -> statement* EOF ;
+progam              -> declaration* EOF ;
+
+declaration         -> variableDeclaration | statement ;
+
+variableDeclaration -> "var" IDENTIFIER ( "=" expression )? ";" ;
 
 statement           -> expressionStatement | printStatement ;
 
@@ -20,5 +24,5 @@ comparison          -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term                -> factor ( ( "-" | "+" ) factor )* ;
 factor              -> unary ( ( "/" | "*" ) unary )* ;
 unary               -> ( "!" | "-" ) unary | primary ;
-primary             -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+primary             -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;
 ```
