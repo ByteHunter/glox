@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ByteHunter/glox/astprinter"
-	syntax_expression "github.com/ByteHunter/glox/syntax"
+	syntax_expression "github.com/ByteHunter/glox/syntax/expression"
 	"github.com/ByteHunter/glox/token"
 )
 

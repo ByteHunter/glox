@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	syntax_expression "github.com/ByteHunter/glox/syntax"
+	syntax_expression "github.com/ByteHunter/glox/syntax/expression"
 )
 
 type AstPrinter struct {

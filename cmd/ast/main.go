@@ -80,10 +80,10 @@ func RunMain() int {
 	if res != 0 {
 		return res
 	}
-	// res = generateAst(outputDirectory, "Statement", StatementClasses)
-	// if res != 0 {
-	// 	return res
-	// }
+	res = generateAst(outputDirectory, "Statement", StatementClasses)
+	if res != 0 {
+		return res
+	}
 
 	return 0
 }

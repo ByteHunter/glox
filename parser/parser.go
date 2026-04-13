@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ByteHunter/glox/reporting"
-	syntax_expression "github.com/ByteHunter/glox/syntax"
+	syntax_expression "github.com/ByteHunter/glox/syntax/expression"
 	"github.com/ByteHunter/glox/token"
 )
 
