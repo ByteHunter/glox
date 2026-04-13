@@ -44,10 +44,30 @@ func (p *Parser) Parse() []statement.Statement {
 	var statements []statement.Statement;
 
 	for (!p.isAtEnd()) {
-		statements = append(statements, p.Statement())
+		statements = append(statements, p.Declaration())
 	}
 
 	return statements
+}
+
+func (p *Parser) Declaration() statement.Statement {
+	if p.match(token.VAR) {
+		return p.VarDeclaration()
+	}
+
+	return p.Statement()
+}
+
+func (p *Parser) VarDeclaration() statement.Statement {
+	name, _ := p.consume(token.IDENTIFIER, "Expect variable name.")
+	var initializer expression.Expression = nil
+	if p.match(token.EQUAL) {
+		initializer, _ = p.Expression()
+	}
+
+	p.consume(token.SEMICOLON, "Expected ';' after variable declaration.")
+
+	return statement.NewVariable(name, initializer)
 }
 
 func (p *Parser) Statement() statement.Statement {
@@ -171,6 +191,9 @@ func (p *Parser) Primary() (expression.Expression, error) {
 
 	if p.match(token.NUMBER, token.STRING) {
 		return expression.NewLiteral(p.previous().Literal), nil
+	}
+
+	if p.match(token.IDENTIFIER) {
 	}
 
 	if p.match(token.LEFT_PAREN) {
