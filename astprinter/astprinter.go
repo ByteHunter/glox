@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	syntax_expression "github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/expression"
 )
 
 type AstPrinter struct {
@@ -14,15 +14,15 @@ func NewAstPrinter() *AstPrinter {
 	return &AstPrinter{}
 }
 
-func (a *AstPrinter) VisitBinaryExpression(expr *syntax_expression.Binary) (any, error) {
+func (a *AstPrinter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
 	return a.Parentesize(expr.Operator.Lexeme, expr.Left, expr.Right), nil
 }
 
-func (a *AstPrinter) VisitGroupingExpression(expr *syntax_expression.Grouping) (any, error) {
+func (a *AstPrinter) VisitGroupingExpression(expr *expression.Grouping) (any, error) {
 	return a.Parentesize("group", expr.Expr), nil
 }
 
-func (a *AstPrinter) VisitLiteralExpression(expr *syntax_expression.Literal) (any, error) {
+func (a *AstPrinter) VisitLiteralExpression(expr *expression.Literal) (any, error) {
 	if expr.Value == nil {
 		return "nil", nil
 	}
@@ -30,11 +30,11 @@ func (a *AstPrinter) VisitLiteralExpression(expr *syntax_expression.Literal) (an
 	return fmt.Sprintf("%v", expr.Value), nil
 }
 
-func (a *AstPrinter) VisitUnaryExpression(expr *syntax_expression.Unary) (any, error) {
+func (a *AstPrinter) VisitUnaryExpression(expr *expression.Unary) (any, error) {
 	return a.Parentesize(expr.Operator.Lexeme, expr.Right), nil
 }
 
-func (a *AstPrinter) Print(expr syntax_expression.Expression) (any, error) {
+func (a *AstPrinter) Print(expr expression.Expression) (any, error) {
 	if expr == nil {
 		return "nil", nil
 	}
@@ -42,7 +42,7 @@ func (a *AstPrinter) Print(expr syntax_expression.Expression) (any, error) {
 	return expr.Accept(a)
 }
 
-func (a *AstPrinter) Parentesize(name string, exprs ...syntax_expression.Expression) string {
+func (a *AstPrinter) Parentesize(name string, exprs ...expression.Expression) string {
 	var buffer strings.Builder
 	buffer.Reset()
 	buffer.WriteString("(" + name)

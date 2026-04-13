@@ -7,7 +7,7 @@ import (
 	"reflect"
 
 	"github.com/ByteHunter/glox/reporting"
-	syntax_expression "github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/expression"
 	"github.com/ByteHunter/glox/token"
 )
 
@@ -33,7 +33,7 @@ func NewInterpreter() *Interpreter {
 	return &Interpreter{}
 }
 
-func (i *Interpreter) VisitBinaryExpression(expr *syntax_expression.Binary) (any, error) {
+func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
 	if expr.Left == nil {
 		return nil, NewRuntimeError(
 			expr.Operator,
@@ -125,15 +125,15 @@ func (i *Interpreter) VisitBinaryExpression(expr *syntax_expression.Binary) (any
 	return nil, NewRuntimeError(expr.Operator, "Unknown binary operator")
 }
 
-func (i *Interpreter) VisitGroupingExpression(expr *syntax_expression.Grouping) (any, error) {
+func (i *Interpreter) VisitGroupingExpression(expr *expression.Grouping) (any, error) {
 	return i.Evaluate(expr.Expr)
 }
 
-func (i *Interpreter) VisitLiteralExpression(expr *syntax_expression.Literal) (any, error) {
+func (i *Interpreter) VisitLiteralExpression(expr *expression.Literal) (any, error) {
 	return expr.Value, nil
 }
 
-func (i *Interpreter) VisitUnaryExpression(expr *syntax_expression.Unary) (any, error) {
+func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) {
 	if expr.Right == nil {
 		return nil, NewRuntimeError(expr.Operator, "Expected an expression, nil found")
 	}
@@ -156,14 +156,14 @@ func (i *Interpreter) VisitUnaryExpression(expr *syntax_expression.Unary) (any, 
 	return nil, NewRuntimeError(expr.Operator, "Unknown unary operator")
 }
 
-func (i *Interpreter) Evaluate(expr syntax_expression.Expression) (any, error) {
+func (i *Interpreter) Evaluate(expr expression.Expression) (any, error) {
 	if expr == nil {
 		return nil, NewRuntimeError(token.Token{}, "Expected an expression, nil found")
 	}
 	return expr.Accept(i)
 }
 
-func (i *Interpreter) Interpret(expr syntax_expression.Expression) {
+func (i *Interpreter) Interpret(expr expression.Expression) {
 	value, err := i.Evaluate(expr)
 	if err != nil {
 		reporting.LoxError(1, err.Error())

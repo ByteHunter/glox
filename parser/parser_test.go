@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/ByteHunter/glox/astprinter"
-	syntax_expression "github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/expression"
 	"github.com/ByteHunter/glox/token"
 )
 
-func printExpression(expr syntax_expression.Expression, _ error) {
+func printExpression(expr expression.Expression, _ error) {
 	result, _ := astprinter.NewAstPrinter().Print(expr)
 	fmt.Printf("%s", result)
 }

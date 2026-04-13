@@ -1,7 +1,7 @@
-package syntax_statement
+package statement
 
 import (
-	syntax_expression "github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/expression"
 )
 
 type Statement interface {
@@ -15,10 +15,10 @@ type Visitor interface {
 
 type ExpressionStatement struct {
 	Statement
-	Expr syntax_expression.Expression
+	Expr expression.Expression
 }
 
-func NewExpression(expr syntax_expression.Expression) *ExpressionStatement {
+func NewExpression(expr expression.Expression) *ExpressionStatement {
 	return &ExpressionStatement{
 		Expr: expr,
 	}
@@ -30,10 +30,10 @@ func (e *ExpressionStatement) Accept(v Visitor) (any, error) {
 
 type PrintStatement struct {
 	Statement
-	Expr syntax_expression.Expression
+	Expr expression.Expression
 }
 
-func NewPrint(expr syntax_expression.Expression) *PrintStatement {
+func NewPrint(expr expression.Expression) *PrintStatement {
 	return &PrintStatement{
 		Expr: expr,
 	}

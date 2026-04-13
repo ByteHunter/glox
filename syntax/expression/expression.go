@@ -1,4 +1,4 @@
-package syntax_expression
+package expression
 
 import (
 	"github.com/ByteHunter/glox/token"

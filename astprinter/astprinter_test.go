@@ -3,7 +3,7 @@ package astprinter
 import (
 	"fmt"
 
-	syntax_expression "github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/expression"
 	"github.com/ByteHunter/glox/token"
 )
 
@@ -51,7 +51,7 @@ func ExampleAstPrinter_Parentesize_with_multiple_expressions() {
 func ExampleAstPrinter_Parentesize_binary() {
 	result := NewAstPrinter().Parentesize(
 		"test",
-		syntax_expression.NewBinary(nil, *token.NewToken(token.PLUS, "+", nil, 1), nil),
+		expression.NewBinary(nil, *token.NewToken(token.PLUS, "+", nil, 1), nil),
 	)
 
 	fmt.Println(result)
@@ -62,7 +62,7 @@ func ExampleAstPrinter_Parentesize_binary() {
 func ExampleAstPrinter_Parentesize_grouping() {
 	result := NewAstPrinter().Parentesize(
 		"test",
-		syntax_expression.NewGrouping(nil),
+		expression.NewGrouping(nil),
 	)
 
 	fmt.Println(result)
@@ -73,7 +73,7 @@ func ExampleAstPrinter_Parentesize_grouping() {
 func ExampleAstPrinter_Parentesize_literal() {
 	result := NewAstPrinter().Parentesize(
 		"test",
-		syntax_expression.NewLiteral(42),
+		expression.NewLiteral(42),
 	)
 
 	fmt.Println(result)
@@ -84,7 +84,7 @@ func ExampleAstPrinter_Parentesize_literal() {
 func ExampleAstPrinter_Parentesize_literal_nil() {
 	result := NewAstPrinter().Parentesize(
 		"test",
-		syntax_expression.NewLiteral(nil),
+		expression.NewLiteral(nil),
 	)
 
 	fmt.Println(result)
@@ -95,7 +95,7 @@ func ExampleAstPrinter_Parentesize_literal_nil() {
 func ExampleAstPrinter_Parentesize_unary() {
 	result := NewAstPrinter().Parentesize(
 		"test",
-		syntax_expression.NewUnary(*token.NewToken(token.PLUS, "+", nil, 1), nil),
+		expression.NewUnary(*token.NewToken(token.PLUS, "+", nil, 1), nil),
 	)
 
 	fmt.Println(result)
@@ -114,14 +114,14 @@ func ExampleAstPrinter_Print_nil_expression() {
 func ExampleAstPrinter_Print() {
 	// Testing expression: -123 * 45.67
 	result, _ := NewAstPrinter().Print(
-		syntax_expression.NewBinary(
-			syntax_expression.NewUnary(
+		expression.NewBinary(
+			expression.NewUnary(
 				*token.NewToken(token.MINUS, "-", nil, 1),
-				syntax_expression.NewLiteral(123),
+				expression.NewLiteral(123),
 			),
 			*token.NewToken(token.STAR, "*", nil, 1),
-			syntax_expression.NewGrouping(
-				syntax_expression.NewLiteral(45.67),
+			expression.NewGrouping(
+				expression.NewLiteral(45.67),
 			),
 		),
 	)
