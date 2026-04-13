@@ -115,7 +115,7 @@ func BuildContent(baseName string, classes SubClassList) (string, error) {
 
 	// Expression interface
 	buffer.WriteString("type " + baseName + " interface {\n")
-	buffer.WriteString("Accept(v Visitor) any\n")
+	buffer.WriteString("Accept(v Visitor) (any, error)\n")
 	buffer.WriteString("}\n\n")
 
 	// Visitor interface
@@ -137,7 +137,7 @@ func BuildVistitorInterface(subClasses SubClassList) string {
 
 	buffer.WriteString("type Visitor interface {\n")
 	for _, subClass := range subClasses {
-		buffer.WriteString("Visit" + subClass.name + "Expression(*" + subClass.name + ") any\n")
+		buffer.WriteString("Visit" + subClass.name + "Expression(*" + subClass.name + ") (any, error)\n")
 	}
 	buffer.WriteString("}\n\n")
 
@@ -171,7 +171,7 @@ func BuildSubClassContent(baseName string, subClass SubClassDefinition) string {
 	buffer.WriteString("}\n\n")
 
 	// Define the accept method
-	buffer.WriteString("func (" + strings.ToLower(subClass.name) + " *" + subClass.name + ") Accept(v Visitor) any {\n")
+	buffer.WriteString("func (" + strings.ToLower(subClass.name) + " *" + subClass.name + ") Accept(v Visitor) (any, error) {\n")
 	buffer.WriteString("return v.Visit" + subClass.name + "Expression(" + strings.ToLower(subClass.name) + ")\n")
 	buffer.WriteString("}\n")
 

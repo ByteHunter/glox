@@ -73,7 +73,7 @@ func ExampleBuildContent() {
 	// )
 	//
 	// type TestClass interface {
-	// Accept(v Visitor) any
+	// Accept(v Visitor) (any, error)
 	// }
 	//
 	// type Visitor interface {
@@ -101,7 +101,7 @@ func ExampleBuildSubClassContent() {
 	// }
 	// }
 	//
-	// func (literal *Literal) Accept(v Visitor) any {
+	// func (literal *Literal) Accept(v Visitor) (any, error) {
 	// return v.VisitLiteralExpression(literal)
 	// }
 }
