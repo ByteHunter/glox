@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/statement"
 )
 
 type AstPrinter struct {
@@ -28,6 +29,22 @@ func (a *AstPrinter) VisitLiteralExpression(expr *expression.Literal) (any, erro
 	}
 
 	return fmt.Sprintf("%v", expr.Value), nil
+}
+
+func (a *AstPrinter) VisitVariableExpression(*expression.Variable) (any, error) {
+	return nil, nil
+}
+
+func (a *AstPrinter) VisitExpressionStatement(*statement.ExpressionStatement) (any, error) {
+	return nil, nil
+}
+
+func (a *AstPrinter) VisitPrintStatement(*statement.PrintStatement) (any, error) {
+	return nil, nil
+}
+
+func (a *AstPrinter) VisitVariableStatement(*statement.VariableStatement) (any, error) {
+	return nil, nil
 }
 
 func (a *AstPrinter) VisitUnaryExpression(expr *expression.Unary) (any, error) {

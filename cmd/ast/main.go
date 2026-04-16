@@ -47,6 +47,12 @@ var ExpressionClasses = SubClassList{
 			{"Right", "Expression"},
 		},
 	},
+	SubClassDefinition{
+		"Variable",
+		FieldList{
+			{"Name", "token.Token"},
+		},
+	},
 }
 
 var StatementClasses = SubClassList{

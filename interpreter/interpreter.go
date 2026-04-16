@@ -173,6 +173,10 @@ func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) 
 	return nil, NewRuntimeError(expr.Operator, "Unknown unary operator")
 }
 
+func (i *Interpreter) VisitVariableExpression(*expression.Variable) (any, error) {
+	return nil, nil
+}
+
 func (i *Interpreter) Evaluate(expr expression.Expression) (any, error) {
 	if expr == nil {
 		return nil, NewRuntimeError(token.Token{}, "Expected an expression, nil found")
