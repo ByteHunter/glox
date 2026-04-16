@@ -194,6 +194,7 @@ func (p *Parser) Primary() (expression.Expression, error) {
 	}
 
 	if p.match(token.IDENTIFIER) {
+		return expression.NewVariable(p.previous()), nil
 	}
 
 	if p.match(token.LEFT_PAREN) {
