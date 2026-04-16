@@ -18,7 +18,8 @@ statement           -> expressionStatement | printStatement ;
 expressionStatement -> expression ";" ;
 printStatement      -> "print" expression ";" ;
 
-expression          -> equality
+expression          -> assignment ;
+assignment          -> IDENTIFIER "=" assignment | equality ;
 equality            -> comparison ( ( "!=" | "==" ) comparison )* ;
 comparison          -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term                -> factor ( ( "-" | "+" ) factor )* ;

@@ -9,11 +9,29 @@ type Expression interface {
 }
 
 type Visitor interface {
+	VisitAssignExpression(*Assign) (any, error)
 	VisitBinaryExpression(*Binary) (any, error)
 	VisitGroupingExpression(*Grouping) (any, error)
 	VisitLiteralExpression(*Literal) (any, error)
 	VisitUnaryExpression(*Unary) (any, error)
 	VisitVariableExpression(*Variable) (any, error)
+}
+
+type Assign struct {
+	Expression
+	Name token.Token
+	Expr Expression
+}
+
+func NewAssign(name token.Token, expr Expression) *Assign {
+	return &Assign{
+		Name: name,
+		Expr: expr,
+	}
+}
+
+func (assign *Assign) Accept(v Visitor) (any, error) {
+	return v.VisitAssignExpression(assign)
 }
 
 type Binary struct {

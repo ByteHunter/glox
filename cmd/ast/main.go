@@ -21,6 +21,13 @@ type SubClassList []SubClassDefinition
 
 var ExpressionClasses = SubClassList{
 	SubClassDefinition{
+		"Assign",
+		FieldList{
+			{"Name", "token.Token"},
+			{"Expr", "Expression"},
+		},
+	},
+	SubClassDefinition{
 		"Binary",
 		FieldList{
 			{"Left", "Expression"},
