@@ -28,3 +28,13 @@ func (e *Environment) Get(name token.Token) (any, error) {
 func (e *Environment) Define(name string, value any) {
 	e.Values[name] = value
 }
+
+func (e *Environment) Assign(name token.Token, value any) error {
+	value, ok := e.Values[string(name.Lexeme)]
+	if ok {
+		e.Values[string(name.Lexeme)] = value
+		return nil
+	}
+
+	return reporting.NewRuntimeError(name, "Undefined variable '" + name.Lexeme + "'.")
+}

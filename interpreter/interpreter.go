@@ -47,6 +47,13 @@ func (i *Interpreter) VisitVariableStatement(stmt *statement.VariableStatement) 
 	return nil, nil
 }
 
+func (i *Interpreter) VisitAssignExpression(expr *expression.Assign) (any, error) {
+	value, _ := i.Evaluate(expr.Value)
+	i.Env.Assign(expr.Name, value)
+
+	return value, nil
+}
+
 func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
 	if expr.Left == nil {
 		return nil, reporting.NewRuntimeError(

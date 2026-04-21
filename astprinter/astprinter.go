@@ -15,6 +15,10 @@ func NewAstPrinter() *AstPrinter {
 	return &AstPrinter{}
 }
 
+func (a *AstPrinter) VisitAssignExpression(expr *expression.Assign) (any, error) {
+	return a.Parentesize(expr.Name.Lexeme, expr.Value), nil
+}
+
 func (a *AstPrinter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
 	return a.Parentesize(expr.Operator.Lexeme, expr.Left, expr.Right), nil
 }

@@ -20,13 +20,13 @@ type Visitor interface {
 type Assign struct {
 	Expression
 	Name token.Token
-	Expr Expression
+	Value Expression
 }
 
 func NewAssign(name token.Token, expr Expression) *Assign {
 	return &Assign{
 		Name: name,
-		Expr: expr,
+		Value: expr,
 	}
 }
 
