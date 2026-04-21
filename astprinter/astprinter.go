@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ByteHunter/glox/expression"
+	"github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/statement"
 )
 
 type AstPrinter struct {
@@ -12,6 +13,10 @@ type AstPrinter struct {
 
 func NewAstPrinter() *AstPrinter {
 	return &AstPrinter{}
+}
+
+func (a *AstPrinter) VisitAssignExpression(expr *expression.Assign) (any, error) {
+	return a.Parentesize(expr.Name.Lexeme, expr.Value), nil
 }
 
 func (a *AstPrinter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
@@ -28,6 +33,22 @@ func (a *AstPrinter) VisitLiteralExpression(expr *expression.Literal) (any, erro
 	}
 
 	return fmt.Sprintf("%v", expr.Value), nil
+}
+
+func (a *AstPrinter) VisitVariableExpression(*expression.Variable) (any, error) {
+	return nil, nil
+}
+
+func (a *AstPrinter) VisitExpressionStatement(*statement.ExpressionStatement) (any, error) {
+	return nil, nil
+}
+
+func (a *AstPrinter) VisitPrintStatement(*statement.PrintStatement) (any, error) {
+	return nil, nil
+}
+
+func (a *AstPrinter) VisitVariableStatement(*statement.VariableStatement) (any, error) {
+	return nil, nil
 }
 
 func (a *AstPrinter) VisitUnaryExpression(expr *expression.Unary) (any, error) {

@@ -6,42 +6,63 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/ByteHunter/glox/expression"
+	"github.com/ByteHunter/glox/environment"
 	"github.com/ByteHunter/glox/reporting"
+	"github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/statement"
 	"github.com/ByteHunter/glox/token"
 )
 
-type RuntimeError struct {
-	Operator token.Token
-	message  string
+type Interpreter struct{
+	Env environment.Environment
 }
 
-func NewRuntimeError(operator token.Token, message string) *RuntimeError {
-	return &RuntimeError{
-		Operator: operator,
-		message:  message,
+func NewInterpreter() *Interpreter {
+	return &Interpreter{
+		Env: *environment.NewEnvironment(),
 	}
 }
 
-func (r RuntimeError) Error() string {
-	return fmt.Sprintf("RuntimeError %s", r.message)
+func (i *Interpreter) VisitExpressionStatement(stmt *statement.ExpressionStatement) (any, error) {
+	i.Evaluate(stmt.Expr)
+	return nil, nil
 }
 
-type Interpreter struct{}
+func (i *Interpreter) VisitPrintStatement(stmt *statement.PrintStatement) (any, error) {
+	value, _ := i.Evaluate(stmt.Expr)
+	fmt.Println(value)
 
-func NewInterpreter() *Interpreter {
-	return &Interpreter{}
+	return nil, nil
+}
+
+func (i *Interpreter) VisitVariableStatement(stmt *statement.VariableStatement) (any, error) {
+	var value any = nil
+
+	if stmt.Initializer != nil {
+		v, _ :=  i.Evaluate(stmt.Initializer)
+		value = v
+	}
+	i.Env.Define(stmt.Name.Lexeme, value)
+
+	return nil, nil
+}
+
+func (i *Interpreter) VisitAssignExpression(expr *expression.Assign) (any, error) {
+	value, _ := i.Evaluate(expr.Value)
+	i.Env.Assign(expr.Name, value)
+
+	return value, nil
 }
 
 func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error) {
 	if expr.Left == nil {
-		return nil, NewRuntimeError(
+		return nil, reporting.NewRuntimeError(
 			expr.Operator,
 			"Left operand expected to be an expression, nil found",
 		)
 	}
 	if expr.Right == nil {
-		return nil, NewRuntimeError(
+		return nil, reporting.NewRuntimeError(
 			expr.Operator,
 			"Right operand expected to be an expression, nil found",
 		)
@@ -59,25 +80,25 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 	case token.GREATER:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			return nil, NewRuntimeError(expr.Operator, err.Error())
+			return nil, reporting.NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l > r, nil
 	case token.GREATER_EQUAL:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			return nil, NewRuntimeError(expr.Operator, err.Error())
+			return nil, reporting.NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l >= r, nil
 	case token.LESS:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			return nil, NewRuntimeError(expr.Operator, err.Error())
+			return nil, reporting.NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l < r, nil
 	case token.LESS_EQUAL:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			return nil, NewRuntimeError(expr.Operator, err.Error())
+			return nil, reporting.NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l <= r, nil
 	case token.BANG_EQUAL:
@@ -87,19 +108,19 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 	case token.MINUS:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			return nil, NewRuntimeError(expr.Operator, err.Error())
+			return nil, reporting.NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l - r, nil
 	case token.SLASH:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			return nil, NewRuntimeError(expr.Operator, err.Error())
+			return nil, reporting.NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l / r, nil
 	case token.STAR:
 		l, r, err := i.parseTwoNumbers(left, right)
 		if err != nil {
-			return nil, NewRuntimeError(expr.Operator, err.Error())
+			return nil, reporting.NewRuntimeError(expr.Operator, err.Error())
 		}
 		return l * r, nil
 	case token.PLUS:
@@ -119,10 +140,10 @@ func (i *Interpreter) VisitBinaryExpression(expr *expression.Binary) (any, error
 			return float64(left.(int)) + float64(right.(int)), nil
 		}
 
-		return nil, NewRuntimeError(expr.Operator, "Incompatible types in PLUS operation")
+		return nil, reporting.NewRuntimeError(expr.Operator, "Incompatible types in PLUS operation")
 	}
 
-	return nil, NewRuntimeError(expr.Operator, "Unknown binary operator")
+	return nil, reporting.NewRuntimeError(expr.Operator, "Unknown binary operator")
 }
 
 func (i *Interpreter) VisitGroupingExpression(expr *expression.Grouping) (any, error) {
@@ -135,7 +156,7 @@ func (i *Interpreter) VisitLiteralExpression(expr *expression.Literal) (any, err
 
 func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) {
 	if expr.Right == nil {
-		return nil, NewRuntimeError(expr.Operator, "Expected an expression, nil found")
+		return nil, reporting.NewRuntimeError(expr.Operator, "Expected an expression, nil found")
 	}
 	right, err := i.Evaluate(expr.Right)
 	if err != nil {
@@ -148,28 +169,37 @@ func (i *Interpreter) VisitUnaryExpression(expr *expression.Unary) (any, error) 
 	case token.MINUS:
 		res, err := i.getFloat(right)
 		if err != nil {
-			return res, NewRuntimeError(expr.Operator, err.Error())
+			return res, reporting.NewRuntimeError(expr.Operator, err.Error())
 		}
 		return -res, nil
 	}
 
-	return nil, NewRuntimeError(expr.Operator, "Unknown unary operator")
+	return nil, reporting.NewRuntimeError(expr.Operator, "Unknown unary operator")
+}
+
+func (i *Interpreter) VisitVariableExpression(expr *expression.Variable) (any, error) {
+	return i.Env.Get(expr.Name)
 }
 
 func (i *Interpreter) Evaluate(expr expression.Expression) (any, error) {
 	if expr == nil {
-		return nil, NewRuntimeError(token.Token{}, "Expected an expression, nil found")
+		return nil, reporting.NewRuntimeError(token.Token{}, "Expected an expression, nil found")
 	}
 	return expr.Accept(i)
 }
 
-func (i *Interpreter) Interpret(expr expression.Expression) {
-	value, err := i.Evaluate(expr)
-	if err != nil {
-		reporting.LoxError(1, err.Error())
-		return
+func (i *Interpreter) Interpret(stmts []statement.Statement) {
+	for _, stmt := range stmts {
+		_, err := i.Execute(stmt)
+		if err != nil {
+			reporting.LoxError(1, err.Error())
+			return
+		}
 	}
-	fmt.Println(value)
+}
+
+func (i *Interpreter) Execute(stmt statement.Statement) (any, error) {
+	return stmt.Accept(i)
 }
 
 func (i *Interpreter) getFloat(v any) (float64, error) {

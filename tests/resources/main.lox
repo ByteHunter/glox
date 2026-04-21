@@ -1,1 +1,9 @@
-42 == 21 * 4 - 42
+var a = 1;
+var b = 2;
+var c = true;
+var hello = "Hello ";
+var world = "World";
+print a + b;
+print a - b;
+print c;
+print hello + world;

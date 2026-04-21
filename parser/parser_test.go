@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ByteHunter/glox/astprinter"
-	"github.com/ByteHunter/glox/expression"
+	"github.com/ByteHunter/glox/syntax/expression"
 	"github.com/ByteHunter/glox/token"
 )
 
@@ -39,7 +39,7 @@ func ExampleParser_Parse_empty_tokens_slice() {
 
 	fmt.Println(parser.Parse())
 	// Output:
-	// <nil>
+	// []
 }
 
 func ExampleParser_Parse_only_eof() {
@@ -49,8 +49,7 @@ func ExampleParser_Parse_only_eof() {
 
 	fmt.Println(parser.Parse())
 	// Output:
-	// [line 1] Error at end: Expected expression
-	// <nil>
+	// []
 }
 
 func ExampleParser_Primary_false() {
@@ -194,7 +193,7 @@ func ExampleParser_Comparison() {
 		}},
 	}
 
-	for _,e := range examples {
+	for _, e := range examples {
 		p := NewParser(e.tokens)
 		printExpression(p.Comparison())
 		fmt.Println()

@@ -3,7 +3,7 @@ package astprinter
 import (
 	"fmt"
 
-	"github.com/ByteHunter/glox/expression"
+	"github.com/ByteHunter/glox/syntax/expression"
 	"github.com/ByteHunter/glox/token"
 )
 

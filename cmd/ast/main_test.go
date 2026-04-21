@@ -90,19 +90,19 @@ func ExampleBuildSubClassContent() {
 	subClassContent := BuildSubClassContent("TestClass", subClass)
 	fmt.Print(subClassContent)
 	// Output:
-	// type Literal struct {
+	// type LiteralTestClass struct {
 	// TestClass
 	// value any
 	// }
 	//
-	// func NewLiteral(value any, ) *Literal {
-	// return &Literal{
+	// func NewLiteral(value any, ) *LiteralTestClass {
+	// return &LiteralTestClass{
 	// value: value,
 	// }
 	// }
 	//
-	// func (literal *Literal) Accept(v Visitor) (any, error) {
-	// return v.VisitLiteralExpression(literal)
+	// func (literal *LiteralTestClass) Accept(v Visitor) (any, error) {
+	// return v.VisitLiteralTestClass(literal)
 	// }
 }
 

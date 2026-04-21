@@ -3,8 +3,9 @@ package parser
 import (
 	"fmt"
 
-	"github.com/ByteHunter/glox/expression"
 	"github.com/ByteHunter/glox/reporting"
+	"github.com/ByteHunter/glox/syntax/expression"
+	"github.com/ByteHunter/glox/syntax/statement"
 	"github.com/ByteHunter/glox/token"
 )
 
@@ -35,17 +36,60 @@ func NewParser(tokens []token.Token) *Parser {
 	}
 }
 
-func (p *Parser) Parse() expression.Expression {
+func (p *Parser) Parse() []statement.Statement {
 	if len(p.tokens) == 0 {
 		return nil
 	}
 
-	expr, err := p.Expression()
-	if err != nil {
-		return nil
+	var statements []statement.Statement;
+
+	for (!p.isAtEnd()) {
+		statements = append(statements, p.Declaration())
 	}
 
-	return expr
+	return statements
+}
+
+func (p *Parser) Declaration() statement.Statement {
+	if p.match(token.VAR) {
+		return p.VarDeclaration()
+	}
+
+	return p.Statement()
+}
+
+func (p *Parser) VarDeclaration() statement.Statement {
+	name, _ := p.consume(token.IDENTIFIER, "Expect variable name.")
+	var initializer expression.Expression = nil
+	if p.match(token.EQUAL) {
+		initializer, _ = p.Expression()
+	}
+
+	p.consume(token.SEMICOLON, "Expected ';' after variable declaration.")
+
+	return statement.NewVariable(name, initializer)
+}
+
+func (p *Parser) Statement() statement.Statement {
+	if p.match(token.PRINT) {
+		return p.PrintStatement()
+	}
+
+	return p.ExpressionStatement()
+}
+
+func (p *Parser) PrintStatement() statement.Statement {
+	value, _ := p.Expression()
+	p.consume(token.SEMICOLON, "Expect ';' after value.")
+
+	return statement.NewPrint(value)
+}
+
+func (p *Parser) ExpressionStatement() statement.Statement {
+	expr, _ := p.Expression()
+	p.consume(token.SEMICOLON, "Expect ';' after expression.")
+
+	return statement.NewExpression(expr)
 }
 
 func (p *Parser) Expression() (expression.Expression, error) {
@@ -147,6 +191,10 @@ func (p *Parser) Primary() (expression.Expression, error) {
 
 	if p.match(token.NUMBER, token.STRING) {
 		return expression.NewLiteral(p.previous().Literal), nil
+	}
+
+	if p.match(token.IDENTIFIER) {
+		return expression.NewVariable(p.previous()), nil
 	}
 
 	if p.match(token.LEFT_PAREN) {
